@@ -17,3 +17,68 @@
 # Constant field `BASE_URL`. Holds the value of the Microsoft graph API's endpoint URL.
 const string BASE_URL = "https://graph.microsoft.com/v1.0";
 
+# Path parameters
+const LOGGED_IN_USER = "me";
+const EVENTS = "events";
+
+# Symbols
+const EQUAL_SIGN = "=";
+const URL_PREFIX = "u!";
+const EMPTY_STRING = "";
+const DOLLAR_SIGN = "$";
+const UNDERSCORE = "_";
+const MINUS_SIGN = "-";
+const PLUS_REGEX = "\\+";
+const FORWARD_SLASH = "/";
+const AMPERSAND = "&";
+const QUESTION_MARK = "?";
+
+# Numbers
+const ZERO = 0;
+const HUNDRED = 100.0;
+const REQUEST_TIMEOUT = 180d;
+const RETRY_ATTEMPTS = 5;
+const RETRY_INTERVAL = 3d;
+const BACKOFF_FACTOR = 2.0;
+const MAX_WAIT = 20d;
+const MAX_CHAR_COUNT = 2000;
+
+# Error messages
+const INVALID_RESPONSE = "Invalid response";
+const INVALID_PAYLOAD = "Invalid payload";
+const INVALID_MESSAGE = "Message cannot exceed 2000 characters";
+const ASYNC_REQUEST_FAILED = "Asynchronous Job failed";
+const INVALID_QUERY_PARAMETER = "Invalid query parameter";
+const MAX_FRAGMENT_SIZE_EXCEEDED = "The content exceeds the maximum fragment size";
+
+# Enumeration - SystemQueryOption
+enum SystemQueryOption {
+    TOP = "top",
+    COUNT = "count",
+    SKIP = "skip",
+    EXPAND = "expand",
+    SELECT = "select",
+    FILTER = "filter",
+    ORDERBY = "orderby",
+    SEARCH = "search",
+    BATCH = "batch",
+    FORMAT = "format"
+}
+
+# Enumeration - OpeningCharacters
+enum OpeningCharacters {
+    OPEN_BRACKET = "(",
+    OPEN_SQUARE_BRACKET = "[",
+    OPEN_CURLY_BRACKET = "{",
+    SINGLE_QUOTE_O = "'",
+    DOUBLE_QUOTE_O = "\""
+}
+
+# Enumeration - ClosingCharacters
+enum ClosingCharacters {
+    CLOSE_BRACKET = ")",
+    CLOSE_SQUARE_BRACKET = "]",
+    CLOSE_CURLY_BRACKET = "}",
+    SINGLE_QUOTE_C = "'",
+    DOUBLE_QUOTE_C = "\""
+}
