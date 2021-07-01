@@ -1,2 +1,12 @@
+[package]
+org= "ballerinax"
+name= "microsoft.calendar"
+version= "1.0.1-SNAPSHOT"
+authors = ["Ballerina"]
+keywords = ["Microsoft", "Calendar"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.calendar"
+license = ["Apache-2.0"]
+
 [build-options]
 observabilityIncluded = true
+taintCheck = true
