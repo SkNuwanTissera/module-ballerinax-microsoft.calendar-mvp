@@ -18,7 +18,7 @@ import ballerina/http;
 // import ballerina/io;
 // import ballerina/log;
 
-# OneDrive Client Object for executing drive operations.
+# Calender Client Object.
 # 
 # + httpClient - the HTTP Client
 @display {
@@ -41,8 +41,10 @@ public client class Client {
         });
     }
 
-    // ************************************* Operations on a Event resource ********************************************
-    // The Event resource is the top-level object representing a event in outlook.
+    # #############################################################################
+    # Operations on a Event resource
+    # The Event resource is the top-level object representing a event in outlook.
+    # #############################################################################
 
     # Get event by proving the ID
     # Get the properties and relationships of the specified event object.
@@ -57,9 +59,27 @@ public client class Client {
     @display {label: "Get Event"}
     remote isolated function getEvent(@display {label: "Event ID"} string eventId, 
                                       @display {label: "Optional Query Parameters"} string[] queryParams = []) 
-                                      returns @tainted Event|error? {
+                                      returns @tainted Event|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId], queryParams);
         return check getEventById(self.httpClient, path);
     }
+
+    // # Get event by proving the ID
+    // # Get the properties and relationships of the specified event object.
+    // # API doc : https://docs.microsoft.com/en-us/graph/api/event-get
+    // #
+    // # + eventId - ID of an event. Read-only.
+    // # + queryParams - Optional query parameters. This method support OData query parameters to customize the response.
+    // #                 It should be an array of type `string` in the format `<QUERY_PARAMETER_NAME>=<PARAMETER_VALUE>`
+    // #                 **Note:** For more information about query parameters, refer here: 
+    // #                   https://docs.microsoft.com/en-us/graph/query-parameters
+    // # + return - An record `Event` if success. Else `Error`.
+    // @display {label: "Get Event"}
+    // remote isolated function ListEvents(@display {label: "Event ID"} string eventId, 
+    //                                   @display {label: "Optional Query Parameters"} string[] queryParams = []) 
+    //                                   returns @tainted Event|error {
+    //     string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId], queryParams);
+    //     return check getEventById(self.httpClient, path);
+    // }
 }
 
