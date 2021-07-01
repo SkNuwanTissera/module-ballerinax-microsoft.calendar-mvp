@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// isolated function convertToEvent(map<json> sourceDriveItemObject) returns Event|error {
-//     Event event = check sourceDriveItemObject.cloneWithType(Event);
-//     event.downloadUrl = let var url = sourceDriveItemObject["@microsoft.graph.downloadUrl"] in url is string ?
+// isolated function convertToEvent(map<json> sourceEventObject) returns Event|error {
+//     Event event = check sourceEventObject.cloneWithType(Event);
+//     event.downloadUrl = let var url = sourceEventObject["@microsoft.graph.downloadUrl"] in url is string ?
 //         url : EMPTY_STRING;
 //     return event;
 // }
