@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/http;
-// import ballerina/io;
 // import ballerina/regex;
 
 isolated function createUrl(string[] pathParameters, string[] queryParameters = []) returns string|error {
@@ -94,10 +93,6 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted ma
 
 isolated function getEventById(http:Client httpClient, string url) returns @tainted Event|error {
     http:Response response = check httpClient->get(url);
-    map<json>|string? event = check handleResponse(response);
-    if (event is map<json>) {
-        return check event.cloneWithType(Event);
-    } else {
-        return error (INVALID_RESPONSE);
-    }
+    json event = check handleResponse(response);
+    return check event.cloneWithType(Event);
 }
