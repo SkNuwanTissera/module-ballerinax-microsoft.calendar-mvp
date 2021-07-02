@@ -35,7 +35,7 @@ Configuration configuration = {
 
 Client calendarClient = check new(configuration);
 
-string eventId  = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBDQAAAN9eh_UmTBdAjsEB8aBad68AAX6kTfgAAAA=";
+string eventId  = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBDQAAAN9eh_UmTBdAjsEB8aBad68AA3XM7lIAAAA=";
 string defaultCalendarId = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBBgAAAN9eh_UmTBdAjsEB8aBad68AAQ_WzOwAAAA=";
 string[] queryParamSelect = ["$select=subject"];
 string[] queryParamTop = ["$top=1"];
@@ -45,9 +45,10 @@ string[] queryParamTop = ["$top=1"];
 }
 function testGetEvent() {
     log:printInfo("client->testGetEvent()"); 
-    Event|error event = calendarClient->getEvent(eventId, queryParamSelect);
+    // Event|error event = calendarClient->getEvent(eventId, queryParamSelect);
+    Event|error event = calendarClient->getEvent(eventId);
     if(event is Event) {
-        log:printInfo("Event received with ID : " + event.id.toString());
+        log:printInfo("Event received with ID : " + event.toString());
     } else {
         test:assertFail(msg = event.message());
     }
@@ -110,15 +111,17 @@ function testCreateEvent() {
                 address:"samanthab@contoso.onmicrosoft.com",
                 name: "Samantha Booth"
             },
-            'type: "required"
+            'type: "required",
+            status: {
+                response : RESPONSE_NOT_RESPONDED
+            }
         }],
         allowNewTimeProposals: true,
-        transactionId:"7E163156-7762-4BEB-A1C6-729EA81755A7"
-
+        transactionId:""
     };
     Event|error event = calendarClient->createEvent(eventMetadata);
     if (event is Event) {
-        log:printInfo("Event created with subject : " +event?.subject.toString());
+        log:printInfo("Event created with subject : " +event.id.toString());
     } else {
         test:assertFail(msg = event.message());
     }
