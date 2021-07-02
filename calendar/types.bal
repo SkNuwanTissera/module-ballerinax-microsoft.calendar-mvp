@@ -28,21 +28,33 @@ public type Configuration record {
 
 # An abstract resource that contains a common set of properties shared among several other resources types.
 #
-# + id - The unique identifier of the event
 public type Event record {
-    string id;
+    *GeneratedEventData;
     *EventMetadata;
 };
 
+public type GeneratedEventData record {
+    string id;
+    string changeKey?;
+    string createdDateTime?;
+};
+
 public type EventMetadata record {
-    string subject?;
+    string? subject?;
     ItemBody body?;
+    string bodyPreview?;
+    string[] categories?;
     DateTimeTimeZone 'start?;
     DateTimeTimeZone end?;
     Location location?;
     Attendees[] attendees?;
     boolean allowNewTimeProposals?;
-    string transactionId?;
+    string? transactionId?;
+    string? seriesMasterId?;
+    string? onlineMeetingUrl?;
+    string? occurrenceId?;
+    boolean hasAttachments?;
+    boolean hideAttendees?;
 };
 
 public type ItemBody record {
@@ -99,20 +111,16 @@ public type TimeSlot record {
 
 public type ResponseStatus record {
     ResponseType response?;
-    DateTimeOffset time?;
-};
-
-public type DateTimeOffset record {
-    
+    string time?;
 };
 
 public enum ResponseType {
-    RESPONSE_NONE = "None",
-    RESPONSE_ORGANIZER = "Organizer",
-    RESPONSE_TENTATIVELY_ACCEPTED = "TentativelyAccepted",
-    RESPONSE_ACCEPTED = "Accepted",
-    RESPONSE_DECLINED = "Declined",
-    RESPONSE_NOT_RESPONDED = "NotResponded"
+    RESPONSE_NONE = "none",
+    RESPONSE_ORGANIZER = "organizer",
+    RESPONSE_TENTATIVELY_ACCEPTED = "tentativelyAccepted",
+    RESPONSE_ACCEPTED = "accepted",
+    RESPONSE_DECLINED = "declined",
+    RESPONSE_NOT_RESPONDED = "notResponded"
 }
 
 public enum LocationType {
