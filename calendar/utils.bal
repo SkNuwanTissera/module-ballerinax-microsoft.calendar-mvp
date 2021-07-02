@@ -91,6 +91,12 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted ma
     return error (message);
 }
 
+# 
+# Get events by Id
+#
+# + httpClient - HTTP Client  
+# + url - Formatted URL
+# + return - If successful return `Event`, else `error`
 isolated function getEventById(http:Client httpClient, string url) returns @tainted Event|error {
     http:Response response = check httpClient->get(url);
     json event = check handleResponse(response);
