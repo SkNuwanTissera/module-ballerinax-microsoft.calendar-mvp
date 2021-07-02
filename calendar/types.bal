@@ -31,4 +31,99 @@ public type Configuration record {
 # + id - The unique identifier of the event
 public type Event record {
     string id;
+    *EventMetadata;
 };
+
+public type EventMetadata record {
+    string subject?;
+    ItemBody body?;
+    DateTimeTimeZone 'start?;
+    DateTimeTimeZone end?;
+    Location location?;
+    Attendees[] attendees?;
+    boolean allowNewTimeProposals?;
+    string transactionId?;
+};
+
+public type ItemBody record {
+    string contentType?;
+    string content?;
+};
+
+public type DateTimeTimeZone record {
+    string dateTime?;
+    string timeZone?;
+};
+
+public type Location record {
+    PhysicalAddress address?;
+    OutlookGeoCoordinates coordinates?;
+    string displayName?;
+    string locationEmailAddress?;
+    string locationUri?;
+    LocationType locationType?;
+};
+
+public type PhysicalAddress record {
+    string city?;
+    string countryOrRegion?;
+    string postalCode?;
+    string state?;
+    string street?;
+};
+
+public type OutlookGeoCoordinates record {
+    float accuracy?;
+    float altitude?;
+    float altitudeAccuracy?;
+    float latitude?;
+    float longitude?;
+};
+
+public type Attendees record {
+    EmailAddress emailAddress?;
+    TimeSlot proposedNewTime?;
+    ResponseStatus status?;
+    string 'type?;
+};
+
+public type EmailAddress record {
+    string address?;
+    string name?;
+};
+
+public type TimeSlot record {
+    DateTimeTimeZone 'start?;
+    DateTimeTimeZone end?;
+};
+
+public type ResponseStatus record {
+    ResponseType response?;
+    DateTimeOffset time?;
+};
+
+public type DateTimeOffset record {
+    
+};
+
+public enum ResponseType {
+    RESPONSE_NONE = "None",
+    RESPONSE_ORGANIZER = "Organizer",
+    RESPONSE_TENTATIVELY_ACCEPTED = "TentativelyAccepted",
+    RESPONSE_ACCEPTED = "Accepted",
+    RESPONSE_DECLINED = "Declined",
+    RESPONSE_NOT_RESPONDED = "NotResponded"
+}
+
+public enum LocationType {
+    LOCATION_TYPE_DEFAULT = "default",
+    LOCATION_TYPE_CONFERENCE_ROOM = "conferenceRoom",
+    LOCATION_TYPE_HOME_ADDRESS = "homeAddress",
+    LOCATION_TYPE_BUSINESS_ADDRESS = "businessAddress",
+    LOCATION_TYPE_GEO_COORDINATES = "geoCoordinates",
+    LOCATION_TYPE_STREET_ADDRESS = "streetAddress",
+    LOCATION_TYPE_HOTEL = "hotel",
+    LOCATION_TYPE_RESTAURANT = "restaurant",
+    LOCATION_TYPE_LOCAL_BUSINESS = "localBusiness",
+    LOCATION_TYPE_POSTAL_ADDRESS = "postalAddress"
+}
