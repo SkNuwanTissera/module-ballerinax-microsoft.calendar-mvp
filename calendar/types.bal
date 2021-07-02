@@ -34,9 +34,21 @@ public type Event record {
 };
 
 public type GeneratedEventData record {
-    string id;
+    readonly string id;
     string changeKey?;
     string createdDateTime?;
+    string? occurrenceId?;
+    string? transactionId?;
+    string? seriesMasterId?;
+    readonly string? onlineMeetingUrl?;
+    readonly string iCalUId;
+    OnlineMeetingInfo onlineMeetingInfo?;
+    OnlineMeetingProviderType onlineMeetingProviderType?;
+    Recipient organizer?;
+    string originalEndTimeZone?;
+    string originalStart?;
+    string originalStartTimeZone?;
+    // PatternedRecurrence recurrence?;
 };
 
 public type EventMetadata record {
@@ -49,12 +61,39 @@ public type EventMetadata record {
     Location location?;
     Attendees[] attendees?;
     boolean allowNewTimeProposals?;
-    string? transactionId?;
-    string? seriesMasterId?;
-    string? onlineMeetingUrl?;
-    string? occurrenceId?;
     boolean hasAttachments?;
     boolean hideAttendees?;
+};
+
+public type PatternedRecurrence record {
+    RecurrencePattern pattern?;
+    RecurrenceRange range?;
+};
+
+public type RecurrenceRange record {
+    string endDate?;
+    int numberOfOccurrences?;
+    string recurrenceTimeZone?;
+    string startDate?;
+    recurrenceRangeType 'type?;
+};
+
+public type Recipient record {
+    EmailAddress emailAddress?;
+};
+
+public type OnlineMeetingInfo record {
+    string conferenceId?;
+    string joinUrl?;
+    Phone phones?;
+    string quickDial?;
+    string[] tollFreeNumbers?;
+    string tollNumber?;
+};
+
+public type Phone record {
+    string number?;
+    PhoneType 'type?;
 };
 
 public type ItemBody record {
@@ -134,4 +173,38 @@ public enum LocationType {
     LOCATION_TYPE_RESTAURANT = "restaurant",
     LOCATION_TYPE_LOCAL_BUSINESS = "localBusiness",
     LOCATION_TYPE_POSTAL_ADDRESS = "postalAddress"
+}
+
+public enum PhoneType {
+    PHONE_TYPE_HOME = "home",
+    PHONE_TYPE_BUSINESS = "business",
+    PHONE_TYPE_MOBILE = "mobile",
+    PHONE_TYPE_OTHER = "other",
+    PHONE_TYPE_ASSISTANT = "assistant",
+    PHONE_TYPE_HOME_FAX = "homeFax",
+    PHONE_TYPE_BUSINESS_FAX = "businessFax",
+    PHONE_TYPE_OTHER_FAX = "otherFax",
+    PHONE_TYPE_PAGER = "pager",
+    PHONE_TYPE_RADIO = "radio"
+}
+
+public enum OnlineMeetingProviderType {
+    ONLINE_MEETING_PROVIDER_TYPE_TEAMS_FOR_BUSINESS = "teamsForBusiness",
+    ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_BUSINESS = "skypeForBusiness",
+    ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_CONSUMER = "skypeForConsumer"
+}
+
+public enum recurrenceRangeType {
+    RECURRENCE_RANGE_TYPE_END_DATE = "endDate",
+    RECURRENCE_RANGE_TYPE_NO_END = "noEnd",
+    RECURRENCE_RANGE_TYPE_NUMBERED = "numbered"
+}
+
+public enum RecurrencePattern {
+    RECURRENCE_PATTERN_DAILY = "daily",
+    RECURRENCE_PATTERN_WEEKLY = "weekly",
+    RECURRENCE_PATTERN_ABSOLUTE_MONTHLY = "absoluteMonthly",
+    RECURRENCE_PATTERN_RELATIVE_MONTHLY = "relativeMonthly",
+    RECURRENCE_PATTERN_ABSOLUTE_YEARLY = "absoluteYearly",
+    RECURRENCE_PATTERN_RELATIVE_YEARLY = "relativeYearly"
 }
