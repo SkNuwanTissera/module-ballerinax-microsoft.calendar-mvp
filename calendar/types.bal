@@ -26,8 +26,7 @@ public type Configuration record {
     http:ClientSecureSocket secureSocketConfig?;
 };
 
-# An abstract resource that contains a common set of properties shared among several other resources types.
-#
+# Event Resource
 public type Event record {
     *GeneratedEventData;
     *EventMetadata;
@@ -48,7 +47,9 @@ public type GeneratedEventData record {
     string originalEndTimeZone?;
     string originalStart?;
     string originalStartTimeZone?;
-    // PatternedRecurrence recurrence?;
+    PatternedRecurrence? recurrence?;
+    readonly EventType 'type?;
+    readonly string webLink?;
 };
 
 public type EventMetadata record {
@@ -63,6 +64,12 @@ public type EventMetadata record {
     boolean allowNewTimeProposals?;
     boolean hasAttachments?;
     boolean hideAttendees?;
+    int reminderMinutesBeforeStart?;
+    boolean responseRequested?;
+    ResponseStatus responseStatus?;
+    Sensitivity sensitivity?;
+    ShowAs showAs?;
+
 };
 
 public type PatternedRecurrence record {
@@ -75,7 +82,7 @@ public type RecurrenceRange record {
     int numberOfOccurrences?;
     string recurrenceTimeZone?;
     string startDate?;
-    recurrenceRangeType 'type?;
+    RecurrenceRangeType 'type?;
 };
 
 public type Recipient record {
@@ -194,7 +201,7 @@ public enum OnlineMeetingProviderType {
     ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_CONSUMER = "skypeForConsumer"
 }
 
-public enum recurrenceRangeType {
+public enum RecurrenceRangeType {
     RECURRENCE_RANGE_TYPE_END_DATE = "endDate",
     RECURRENCE_RANGE_TYPE_NO_END = "noEnd",
     RECURRENCE_RANGE_TYPE_NUMBERED = "numbered"
@@ -207,4 +214,27 @@ public enum RecurrencePattern {
     RECURRENCE_PATTERN_RELATIVE_MONTHLY = "relativeMonthly",
     RECURRENCE_PATTERN_ABSOLUTE_YEARLY = "absoluteYearly",
     RECURRENCE_PATTERN_RELATIVE_YEARLY = "relativeYearly"
+}
+
+public enum Sensitivity {
+    SENSITIVITY_NORMAL = "normal",
+    SENSITIVITY_PERSONAL = "personal",
+    SENSITIVITY_PRIVATE = "private",
+    SENSITIVITY_CONFIDENTIAL = "confidential"
+}
+
+public enum ShowAs {
+    SHOW_AS_FREE = "free",
+    SHOW_AS_TENTATIVE = "tentative",
+    SHOW_AS_BUSY = "busy",
+    SHOW_AS_OOF = "oof",
+    SHOW_AS_WORKING_ELSE_WHERE = "workingElsewhere",
+    SHOW_AS_UNKNOWN = "unknown"
+}
+
+public enum EventType {
+    EVENT_TYPE_SINGLE_INSTANCE = "singleInstance",
+    EVENT_TYPE_OCCURRENCE = "occurrence",
+    EVENT_TYPE_EXCEPTION = "exception",
+    EVENT_TYPE_SERIES_MASTER = "seriesMaster"
 }
