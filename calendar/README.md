@@ -31,7 +31,7 @@ features. Just as you write in a notebook, you can click any time slot in the Ou
 By using the Calendar you can create appointments and events, organize meetings, view group schedules, and much more.
 
 <p align="center">
-<img src="./docs/images/Outlook_calendar.png?raw=true" alt="Calendar"/>
+<img src="./docs/images/outlook-calendar.png?raw=true" alt="Calendar"/>
 </p>
 
 ## Key features of Microsoft Calendar
