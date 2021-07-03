@@ -58,7 +58,8 @@ account (currently logged in user).
 - Java 11 installed - Java Development Kit (JDK) with version 11 is required
 - [Ballerina SL Beta 1](https://ballerina.io/learn/user-guide/getting-started/setting-up-ballerina/installation-options/) installed 
 
-## Obtaining tokens
+## Obtaining tokens 
+<!-- TODO: Add images & update with scopes --> 
 - Create an Microsoft account.
 - Sign into Azure Portal - App Registrations. (You can use your personal, work or school account to register the app)
 
@@ -82,16 +83,16 @@ account (currently logged in user).
     directory - Multi-tenant) and personal Microsoft accounts (e.g., Skype, Xbox, Outlook.com). Click Register to 
     create the application.
     - Provide a **Redirect URI** if necessary.
-<!-- TODO: Add images -->
+
         ![Obtaining Credentials Step 1](docs/images/s1.png) 
     - Copy the Application (client) ID to fill `<MS_CLIENT_ID>`. This is the unique identifier for your app.
-<!-- TODO: Add images -->
+
         ![Obtaining Credentials Step 1](docs/images/s2.png)
 
     **Step 2:** Create a new client secret.<br/>
     - Under **Certificates & Secrets**, create a new client secret to fill `<MS_CLIENT_SECRET>`. This requires providing 
     a description and a period of expiry. Next, click Add.
-<!-- TODO: Add images -->
+
         ![Obtaining Credentials Step 2](docs/images/s3.png)
 
     **Step 3:** Add necessary scopes/permissions.<br/>
@@ -100,13 +101,13 @@ account (currently logged in user).
     - Some high-privilege permissions in Microsoft resources can be set to admin-restricted. So, if we want to access 
     such kind of resources, an organization's administrator must consent to those scopes on behalf of the organization's 
     users.
-<!-- TODO: Add images -->    
+ 
         ![Obtaining Credentials Step 3](docs/images/s4.png)
 
     **Step 4:** Obtain the authorization endpoint and token endpoint by opening the `Endpoints` tab in the application 
     overview. <br/>
     - The **OAuth 2.0 token endpoint (v2)** can be used as the value for `<MS_REFRESH_URL>`
-<!-- TODO: Add images -->
+
         ![Obtaining Credentials Step 4](docs/images/s5.png)
 
     - In a new browser, enter the below URL by replacing the <MS_CLIENT_ID> with the application ID.
