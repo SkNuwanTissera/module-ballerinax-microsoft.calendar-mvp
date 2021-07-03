@@ -56,8 +56,7 @@ account (currently logged in user).
 - Microsoft Account
 - Access to Azure Portal
 - Java 11 installed - Java Development Kit (JDK) with version 11 is required
-- [Ballerina SL Alpha 5](https://ballerina.io/learn/user-guide/getting-started/setting-up-ballerina/installation-options/) installed 
-    - Ballerina Swan Lake Alpha 5 is required
+- [Ballerina SL Beta 1](https://ballerina.io/learn/user-guide/getting-started/setting-up-ballerina/installation-options/) installed 
 
 ## Obtaining tokens
 - Create an account in Calendar
