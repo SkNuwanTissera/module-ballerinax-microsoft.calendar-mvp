@@ -26,7 +26,7 @@ Connects to Microsoft Calendar using Ballerina.
 # Introduction
 ## What is Microsoft Calendar?
 [Microsoft Calendar](https://support.microsoft.com/en-us/office/introduction-to-the-outlook-calendar-d94c5203-77c7-48ec-90a5-2e2bc10bd6f8) 
-composed of the calendar and scheduling component of Outlook that is fully integrated with email, contacts, and other 
+is composed of the calendar and scheduling component of Outlook that is fully integrated with email, contacts, and other 
 features. Just as you write in a notebook, you can click any time slot in the Outlook Calendar and start typing. 
 By using the Calendar you can create appointments and events, organize meetings, view group schedules, and much more.
 
@@ -36,14 +36,12 @@ By using the Calendar you can create appointments and events, organize meetings,
 
 ## Key features of Microsoft Calendar
 - [Create appointments and events](https://support.microsoft.com/en-us/office/create-or-schedule-an-appointment-be84396a-0903-4e25-b31c-1c99ce0dacf2)  
-- Organize meetings
-- View group schedules  
-- View calendars side-by-side 
-- View calendars on top of one another in overlay view   
-- Link to calendars on Microsoft SharePoint sites  
-- Send calendars to anyone through email   
-- Subscribe to Internet Calendars   
-- Manage another user's calendar     
+- [Organize meetings](https://support.microsoft.com/en-us/office/schedule-a-meeting-with-other-people-5c9877bc-ab91-4a7c-99fb-b0b68d7ea94f)
+- [View group schedules](https://support.microsoft.com/en-us/office/schedule-a-meeting-with-other-people-5c9877bc-ab91-4a7c-99fb-b0b68d7ea94f)
+- [View calendars side-by-side](https://support.microsoft.com/en-us/office/view-multiple-calendars-at-the-same-time-fffa8783-0556-4ea1-ba62-3ed8a95a903c) 
+- [View calendars on top of one another in overlay view](https://support.microsoft.com/en-us/office/view-multiple-calendars-at-the-same-time-fffa8783-0556-4ea1-ba62-3ed8a95a903c) 
+- [Send calendars to anyone through email](https://support.microsoft.com/en-us/office/share-an-outlook-calendar-with-other-people-353ed2c1-3ec5-449d-8c73-6931a0adab88)   
+- [Manage another user's calendar](https://support.microsoft.com/en-us/office/manage-another-person-s-mail-and-calendar-items-afb79d6b-2967-43b9-a944-a6b953190af5)     
 
 ## Connector Overview
 Ballerina connector for Microsoft Calendar is connecting to Calendar file storage API in Microsoft Graph v1.0 via Ballerina 
