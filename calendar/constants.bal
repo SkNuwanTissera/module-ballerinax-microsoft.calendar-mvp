@@ -51,6 +51,9 @@ const ASYNC_REQUEST_FAILED = "Asynchronous Job failed";
 const INVALID_QUERY_PARAMETER = "Invalid query parameter";
 const MAX_FRAGMENT_SIZE_EXCEEDED = "The content exceeds the maximum fragment size";
 
+# Headers 
+const PREFER = "Prefer";
+
 # Enumeration - SystemQueryOption
 enum SystemQueryOption {
     TOP = "top",
