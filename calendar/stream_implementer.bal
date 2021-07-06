@@ -20,14 +20,18 @@ import ballerina/io;
 class EventStream {
     private Event[] currentEntries = [];
     private string nextLink;
+    private string timeZone;
+    private string contentType;
     int index = 0;
     private final http:Client httpClient;
     private final string path;
 
-     isolated function init(http:Client httpClient, string path) returns @tainted error? {
+     isolated function init(http:Client httpClient, string path, TimeZone? timeZone, ContentType? contentType) returns @tainted error? {
         self.httpClient = httpClient;
         self.path = path;
         self.nextLink = EMPTY_STRING;
+        self.timeZone = timeZone.toString();
+        self.contentType = contentType.toString();
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
@@ -48,7 +52,8 @@ class EventStream {
     }
 
     isolated function fetchRecordsInitial() returns @tainted Event[]|error {
-        http:Response response = check self.httpClient->get(self.path);
+        http:Response response 
+            = check self.httpClient->get(self.path, preparePreferenceHeaderString(self.timeZone, self.contentType));
         map<json>|string? handledResponse = check handleResponse(response);
         io:println(handledResponse);
         return check self.getAndConvertToEventArray(response);
@@ -56,7 +61,8 @@ class EventStream {
     
     isolated function fetchRecordsNext() returns @tainted Event[]|error {
         http:Client nextPageClient = check new (self.nextLink);
-        http:Response response = check nextPageClient->get(EMPTY_STRING);
+        http:Response response 
+            = check nextPageClient->get(EMPTY_STRING, preparePreferenceHeaderString(self.timeZone, self.contentType));
         return check self.getAndConvertToEventArray(response);
     }
 
