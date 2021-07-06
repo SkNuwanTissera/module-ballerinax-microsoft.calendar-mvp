@@ -157,7 +157,23 @@ public client class Client {
                                          returns @tainted error? {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
         http:Response response = check self.httpClient->patch(<@untainted>path, check eventMetadata.cloneWithType(json));
-        map<json>|string? event = check handleResponse(response);
+        _ = check handleResponse(response);
+    }
+
+    # Delete an event
+    # This removes the specified event from the containing calendar.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/event-delete
+    #
+    # + eventId - ID of an event. Read-only.  
+    # + calendarId - Calendar ID of the calendar that you want to create the event. 
+    # + return - `EventId` if success. Else `error`.
+    @display {label: "Update Event"}
+    remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
+                                         @display {label: "Calendar ID"} string? calendarId = ()) 
+                                         returns @tainted error? {
+        string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
+        http:Response response = check self.httpClient->delete(<@untainted>path);
+        _ = check handleResponse(response);
     }
 }
 
