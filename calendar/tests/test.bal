@@ -35,7 +35,7 @@ Configuration configuration = {
 
 Client calendarClient = check new(configuration);
 
-string eventId  = "";
+string eventId  = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBDQAAAN9eh_UmTBdAjsEB8aBad68AA3hE180AAAA=";
 string defaultCalendarId = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBBgAAAN9eh_UmTBdAjsEB8aBad68AAQ_WzOwAAAA=";
 string[] queryParamSelect = ["$select=subject"];
 string[] queryParamTop = ["$top=1"];
@@ -63,7 +63,7 @@ function testGetEventWithPreferenceHeaders() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()"); 
     Event|error event = calendarClient->getEvent(eventId, timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT);
     if(event is Event) {
-        //log:printInfo("Event received with requested timezone : " + event?.'start?.timeZone.toString());
+        log:printInfo("Event received with requested timezone : " + event?.'start?.timeZone.toString());
     } else {
         test:assertFail(msg = event.message());
     }
@@ -132,11 +132,11 @@ function testCreateEvent() {
         },
         'start: {
             dateTime: "2017-04-15T12:00:00",
-            timeZone: "Pacific Standard Time"
+            timeZone: TIMEZONE_AD
         },
         end: {
             dateTime: "2017-04-15T14:00:00",
-            timeZone: "Pacific Standard Time"
+            timeZone: TIMEZONE_AE
         },
         location:{
             displayName:"Harry's Bar"
@@ -146,7 +146,7 @@ function testCreateEvent() {
                 address:"samanthab@contoso.onmicrosoft.com",
                 name: "Samantha Booth"
             },
-            'type: "required",
+            'type: ATTENDEE_TYPE_REQUIRED,
             status: {
                 response : RESPONSE_NOT_RESPONDED
             }
@@ -188,14 +188,14 @@ function testCreateEventWithMultipleLocations() {
             address: "DanaS@contoso.onmicrosoft.com",
             name: "Dana"
         },
-        'type: "Required"
+        'type: ATTENDEE_TYPE_REQUIRED
         },
         {
         emailAddress: {
             address: "AlexW@contoso.onmicrosoft.com",
             name: "Alex Wilber"
         },
-        'type: "Required"
+        'type: ATTENDEE_TYPE_OPTIONAL
         }
     ],
     location: {
@@ -244,12 +244,20 @@ function testUpdateEvent() {
     log:printInfo("client->testUpdateEvent()"); 
     EventMetadata eventBody  = {
         subject : "Changed the Subject during Update Event",
+        isAllDay : false, // if this is true, you need to provide `Start` and `End` also.
+        'start : {
+            dateTime : "2015-09-08T00:00:00.000Z",
+            timeZone : TIMEZONE_AD
+        },
+        end : {
+            dateTime : "2015-09-09T00:00:00.000Z",
+            timeZone : TIMEZONE_AD
+        },
         responseStatus: {
             response: RESPONSE_ACCEPTED
         },
         recurrence : null,
         importance : IMPORTANCE_HIGH,
-        isAllDay : true,
         reminderMinutesBeforeStart : 99,
         isOnlineMeeting : true,
         sensitivity : SENSITIVITY_PERSONAL,
@@ -265,4 +273,17 @@ function testUpdateEvent() {
         test:assertFail(msg = response.message());
     }
     io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+}
+function testDeleteEvent() {
+    error? response = calendarClient->deleteEvent(eventId);
+    if (response is error) {
+        test:assertFail(msg = response.message());
+    }
+    io:println("\n\n");
+
 }
