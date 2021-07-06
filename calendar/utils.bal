@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/http;
-// import ballerina/regex;
+import ballerina/io;
 
 isolated function createUrl(string[] pathParameters, string[] queryParameters = []) returns string|error {
     string url = EMPTY_STRING;
@@ -91,14 +91,44 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted ma
     return error (message);
 }
 
-# 
 # Get events by Id
 #
 # + httpClient - HTTP Client  
-# + url - Formatted URL
+# + url - Formatted URL 
+# + timeZone - Parameter Description  
+# + contentType - Parameter Description
+# + return - Return Value Description  
+#
 # + return - If successful return `Event`, else `error`
-isolated function getEventById(http:Client httpClient, string url) returns @tainted Event|error {
-    http:Response response = check httpClient->get(url);
+isolated function getEventById(http:Client httpClient, string url, string? timeZone, string? contentType) returns @tainted Event|error {
+    http:Response response = check httpClient->get(url, preparePreferenceHeaderString(timeZone, contentType));
+    io:println(response);
     json event = check handleResponse(response);
     return check event.cloneWithType(Event);
+}
+
+isolated function preparePreferenceHeaderString(string? timeZone, string? contentType) returns map<string> {
+    map<string> header = {};
+    if(timeZone is string && contentType is string) {
+        header = {[PREFER] : string `outlook.timezone="${timeZone.toString()}", outlook.body-content-type="${contentType.toString()}"`};
+    }
+    else if (timeZone is string) {
+        header = {[PREFER] : string `outlook.timezone="${timeZone.toString()}"`};
+    }
+    else if (contentType is string) {
+        header = {[PREFER] : string `outlook.body-content-type="${contentType.toString()}"`};
+    }
+    io:println(header);
+    return header;
+}
+
+# Sets required request headers.
+# 
+# + request - Request object reference
+# + specificRequiredHeaders - Request headers as a key value map
+isolated function setSpecificRequestHeaders(http:Request request, map<string> specificRequiredHeaders) {
+    string[] keys = specificRequiredHeaders.keys();
+    foreach string keyItem in keys {
+        request.setHeader(keyItem, specificRequiredHeaders.get(keyItem));
+    }
 }
