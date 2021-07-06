@@ -149,7 +149,7 @@ public client class Client {
     # + eventId - ID of an event. Read-only.  
     # + eventMetadata - Metadata related to Event that we are passing on input.  
     # + calendarId - Calendar ID of the calendar that you want to create the event. 
-    # + return - `EventId` if success. Else `error`.
+    # + return - `error` if failed.
     @display {label: "Update Event"}
     remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
                                          @display {label: "Event Metadata"} EventMetadata eventMetadata,
@@ -166,9 +166,9 @@ public client class Client {
     #
     # + eventId - ID of an event. Read-only.  
     # + calendarId - Calendar ID of the calendar that you want to create the event. 
-    # + return - `EventId` if success. Else `error`.
-    @display {label: "Update Event"}
-    remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
+    # + return - `error` if failed.
+    @display {label: "Delete Event"}
+    remote isolated function deleteEvent(@display {label: "Event ID"} string eventId, 
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
                                          returns @tainted error? {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
