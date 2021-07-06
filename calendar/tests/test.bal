@@ -131,12 +131,12 @@ function testCreateEvent() {
             content: "Test-Body-1"
         },
         'start: {
-            dateTime: "2017-04-15T12:00:00",
-            timeZone: TIMEZONE_AD
+            dateTime: "2021-07-16T12:00:00",
+            timeZone: TIMEZONE_LK
         },
         end: {
-            dateTime: "2017-04-15T14:00:00",
-            timeZone: TIMEZONE_AE
+            dateTime: "2021-07-16T14:00:00",
+            timeZone: TIMEZONE_LK
         },
         location:{
             displayName:"Harry's Bar"
@@ -280,6 +280,7 @@ function testUpdateEvent() {
     dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
 }
 function testDeleteEvent() {
+    log:printInfo("client->testDeleteEvent()"); 
     error? response = calendarClient->deleteEvent(eventId);
     if (response is error) {
         test:assertFail(msg = response.message());
