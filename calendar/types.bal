@@ -51,16 +51,16 @@ public type GeneratedEventData record {
 
 public type EventMetadata record {
     string? subject?;
-    ItemBody? body?;
+    ItemBody body?;
     string bodyPreview?;
     string[] categories?;
     string originalStartTimeZone?;
     string originalEndTimeZone?;
     DateTimeTimeZone? 'start?;
     DateTimeTimeZone? end?;
-    Location? location?;
-    Location?[] locations?;
-    Attendees?[] attendees?;
+    Location location?;
+    Location[] locations?;
+    Attendees[] attendees?;
     PatternedRecurrence? recurrence?;
     boolean allowNewTimeProposals?;
     boolean hasAttachments?;
@@ -71,7 +71,7 @@ public type EventMetadata record {
     Importance importance?;
     int reminderMinutesBeforeStart?;
     boolean responseRequested?;
-    ResponseStatus? responseStatus?;
+    ResponseStatus responseStatus?;
     Sensitivity sensitivity?;
     ShowAs showAs?;
     OnlineMeetingProviderType onlineMeetingProvider?;
@@ -203,7 +203,8 @@ public enum PhoneType {
 public enum OnlineMeetingProviderType {
     ONLINE_MEETING_PROVIDER_TYPE_TEAMS_FOR_BUSINESS = "teamsForBusiness",
     ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_BUSINESS = "skypeForBusiness",
-    ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_CONSUMER = "skypeForConsumer"
+    ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_CONSUMER = "skypeForConsumer",
+    ONLINE_MEETING_PROVIDER_TYPE_SKYPE_FOR_UNKNOWN = "unknown"
 }
 
 public enum RecurrenceRangeType {
@@ -242,6 +243,12 @@ public enum EventType {
     EVENT_TYPE_OCCURRENCE = "occurrence",
     EVENT_TYPE_EXCEPTION = "exception",
     EVENT_TYPE_SERIES_MASTER = "seriesMaster"
+}
+
+public enum AttendeeType {
+    ATTENDEE_TYPE_REQUIRED = "required",
+    ATTENDEE_TYPE_OPTIONAL = "optional",
+    ATTENDEE_TYPE_RESOURCE = "resource"
 }
 
 public enum ContentType {
