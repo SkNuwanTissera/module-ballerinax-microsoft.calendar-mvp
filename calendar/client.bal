@@ -146,9 +146,9 @@ public client class Client {
     # This updates the properties of a Event object.
     # API doc : https://docs.microsoft.com/en-us/graph/api/event-update 
     #
-    # + eventId - ID of an event. Read-only.  
+    # + eventId - ID of an event.
     # + eventMetadata - Metadata related to Event that we are passing on input.  
-    # + calendarId - Calendar ID of the calendar that you want to create the event. 
+    # + calendarId - Calendar ID of the calendar that you want to update the event. 
     # + return - `error` if failed.
     @display {label: "Update Event"}
     remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
@@ -164,8 +164,8 @@ public client class Client {
     # This removes the specified event from the containing calendar.
     # API doc : https://docs.microsoft.com/en-us/graph/api/event-delete
     #
-    # + eventId - ID of an event. Read-only.  
-    # + calendarId - Calendar ID of the calendar that you want to create the event. 
+    # + eventId - ID of an event. 
+    # + calendarId - Calendar ID of the calendar that you want to delete the event. 
     # + return - `error` if failed.
     @display {label: "Delete Event"}
     remote isolated function deleteEvent(@display {label: "Event ID"} string eventId, 
