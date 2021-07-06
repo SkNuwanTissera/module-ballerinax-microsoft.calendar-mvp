@@ -60,7 +60,7 @@ public type EventMetadata record {
     DateTimeTimeZone? end?;
     Location location?;
     Location[] locations?;
-    Attendees[] attendees?;
+    Attendee[] attendees?;
     PatternedRecurrence? recurrence?;
     boolean allowNewTimeProposals?;
     boolean hasAttachments?;
@@ -143,7 +143,7 @@ public type OutlookGeoCoordinates record {
     float longitude?;
 };
 
-public type Attendees record {
+public type Attendee record {
     EmailAddress emailAddress?;
     TimeSlot proposedNewTime?;
     ResponseStatus status?;
