@@ -16,6 +16,7 @@
 
 import ballerina/http;
 import ballerina/io;
+import ballerina/log;
 
 isolated function createUrl(string[] pathParameters, string[] queryParameters = []) returns string|error {
     string url = EMPTY_STRING;
@@ -118,7 +119,7 @@ isolated function preparePreferenceHeaderString(string? timeZone, string? conten
     else if (contentType is string) {
         header = {[PREFER] : string `outlook.body-content-type="${contentType.toString()}"`};
     }
-    io:println(header);
+    log:printDebug(header.toString());
     return header;
 }
 
