@@ -27,6 +27,7 @@ import ballerina/log;
 public client class Client {
     http:Client httpClient;
 
+    # Initiate outloook calendar configuration
     public isolated function init(Configuration config) returns error? {
         http:BearerTokenConfig|http:OAuth2RefreshTokenGrantConfig clientConfig = config.clientConfig;
         http:ClientSecureSocket? socketConfig = config?.secureSocketConfig;
@@ -44,6 +45,7 @@ public client class Client {
     # Operations on a Event resource
     # The Event resource is the top-level object representing a event in outlook.
     # #############################################################################
+    
     # Get event by proving the ID
     # Get the properties and relationships of the specified event object.
     # API doc : https://docs.microsoft.com/en-us/graph/api/event-get
@@ -95,7 +97,7 @@ public client class Client {
     # + subject - Subject of the event  
     # + description - Description of the event  
     # + calendarId - Calendar ID of the calendar that you want to create the event. If not, Default will be used.
-    # + return - `EventId` if success. Else `error`.
+    # + return - `Event` if success. Else `error`.
     @display {label: "Add Quick Event"}
     remote isolated function addQuickEvent(@display {label: "Title"} string subject, 
                                            @display {label: "Description"} string? description = (),
@@ -121,7 +123,7 @@ public client class Client {
     #
     # + eventMetadata - Metadata related to Event that we are passing on input.  
     # + calendarId - Calendar ID of the calendar that you want to create the event. 
-    # + return - `EventId` if success. Else `error`.
+    # + return - `Event` if success. Else `error`.
     @display {label: "Create Event"}
     remote isolated function createEvent(@display {label: "Event Metadata"} EventMetadata eventMetadata,
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
@@ -144,7 +146,7 @@ public client class Client {
     # + eventId - ID of an event.
     # + eventMetadata - Metadata related to Event that we are passing on input.  
     # + calendarId - Calendar ID of the calendar that you want to update the event. 
-    # + return - `error` if failed.
+    # + return - `Event` if success. Else `error`.
     @display {label: "Update Event"}
     remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
                                          @display {label: "Event Metadata"} EventMetadata eventMetadata,
@@ -172,6 +174,98 @@ public client class Client {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
         http:Response response = check self.httpClient->delete(<@untainted>path);
         _ = check handleResponse(response);
+    }
+
+    # ##################################################################################
+    # Operations on a Calendar resource
+    # The Calendar resource is the top-level object representing a calendar in outlook.
+    # #################################################################################
+    
+    # Create a calendar
+    # This create a new calendar for the user.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/user-post-calendars
+    #
+    # + calendarMetadata - Metadata related to calendar that we are passing on input.  
+    # + return - `Calender` if success. Else `error`.
+    @display {label: "Create Calender"}
+    remote isolated function createCalendar(@display {label: "Calendar Metadata"} CalendarMetadata calendarMetadata) 
+                                             returns @tainted Calendar|error { 
+        string path = check createUrl([LOGGED_IN_USER, CALENDARS]);
+        return check self.httpClient->post(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
+    }
+
+    # Delete a calendar
+    # This removes the specified calendar.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/calendar-delete
+    #
+    # + calendarId - ID of a calendar. 
+    # + return - `error` if failed.
+    @display {label: "Delete Calendar"}
+    remote isolated function deleteCalendar(@display {label: "Calendar ID"} string calendarId) returns @tainted error? {
+        string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
+        http:Response response = check self.httpClient->delete(<@untainted>path);
+        _ = check handleResponse(response);
+    }
+
+    # Get a calendar by proving the ID
+    # Get the properties and relationships of a calendar object.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/calendar-get 
+    #
+    # + calendarId - ID of an event. Read-only.  
+    # + queryParams - Optional query parameters. This method support OData query parameters to customize the response. 
+    # It should be an array of type `string` in the format `<QUERY_PARAMETER_NAME>=<PARAMETER_VALUE>`
+    # **Note:** For more information about query parameters, refer here: 
+    # https://docs.microsoft.com/en-us/graph/query-parameters
+    # + return - a record `Calendar` if success. Else `error`.
+    @display {label: "Get Calendar"}
+    remote isolated function getCalendar(@display {label: "Calendar ID"} string calendarId, 
+                                         @display {label: "Optional Query Parameters"} string[] queryParams = []) 
+                                         returns @tainted Calendar|error {
+        string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId], queryParams);
+        return check self.httpClient->get(<@untainted>path,targetType=Calendar);
+    }
+
+    # Update a calender
+    # This updates the properties of a calendar object.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/calendar-update
+    #
+    # + calendarId - ID of an calendar.
+    # + name - Name of the calendar.
+    # + color - Color of the calendar.
+    # + isDefaultCalendar - Default calendar.
+    # + return - `Calendar` if success. Else `error`.
+    @display {label: "Update Calendar"}
+    remote isolated function updateCalendar(@display {label: "Calendar ID"} string calendarId,
+                                            @display {label: "Calendar Name"} string? name = (),
+                                            @display {label: "Calendar Color"} string? color = (),
+                                            @display {label: "Default Calendar"} boolean? isDefaultCalendar = ()) 
+                                            returns @tainted Calendar|error {
+
+        CalendarMetadata calendarMetadata = {
+            name : name.toString(),
+            color : color.toString(),
+            isDefaultCalendar : isDefaultCalendar
+        };                                       
+        string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
+        return check self.httpClient->patch(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
+    }
+
+    # Get list of calendars.
+    # Get all the user's calendars.
+    # API doc : https://docs.microsoft.com/en-us/graph/api/user-list-calendars 
+    #
+    # + queryParams - Optional query parameters. This method support OData query parameters to customize the response.
+    #                 It should be an array of type `string` in the format `<QUERY_PARAMETER_NAME>=<PARAMETER_VALUE>`
+    #                 **Note:** For more information about query parameters, refer here: 
+    #                   https://docs.microsoft.com/en-us/graph/query-parameters
+    # + return - a stream of `Calendar` if success. Else `error`.
+    @display {label: "List Calendars"}
+    remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string[] queryParams = [])  
+                                           returns @tainted stream<Calendar, error>|error {
+        string path = check createUrl([LOGGED_IN_USER, CALENDARS], queryParams);
+        CalendarStream objectInstance = check new (self.httpClient, <@untainted>path);
+        stream<Calendar, error> finalStream = new (objectInstance);
+        return finalStream;
     }
 }
 
