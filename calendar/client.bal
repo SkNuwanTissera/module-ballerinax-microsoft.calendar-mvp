@@ -15,8 +15,7 @@
 // under the License.
 
 import ballerina/http;
-// import ballerina/io;
-// import ballerina/log;
+import ballerina/log;
 
 # Calender Client Object.
 # 
@@ -107,7 +106,12 @@ public client class Client {
             subject:subject,
             body : { content: description.toString() }
         };
-        string path = check createUrl([LOGGED_IN_USER, EVENTS]);
+        string path = EMPTY_STRING;
+        if (calendarId is string){
+            path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]);
+        } else {
+            path = check createUrl([LOGGED_IN_USER, EVENTS]);
+        }
         return check self.httpClient->post(<@untainted>path, check newEvent.cloneWithType(json), targetType=Event);
     }
 
@@ -123,7 +127,13 @@ public client class Client {
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
                                          returns @tainted Event|error { 
                                         //TODO : Handle optional calenderId
-        string path = check createUrl([LOGGED_IN_USER, EVENTS]);
+        string path = EMPTY_STRING;
+        if (calendarId is string){
+            path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]);
+        } else {
+            path = check createUrl([LOGGED_IN_USER, EVENTS]);
+        }
+        log:printDebug(path.toString());
         return check self.httpClient->post(<@untainted>path, check eventMetadata.cloneWithType(json), targetType=Event);
     }
 
@@ -141,7 +151,12 @@ public client class Client {
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
                                          returns @tainted Event|error {
                                          //TODO : Handle optional calenderId
-        string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
+        string path = EMPTY_STRING;
+        if (calendarId is string){
+            path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS, eventId]);
+        } else {
+            path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
+        }
         return check self.httpClient->patch(<@untainted>path, check eventMetadata.cloneWithType(json), targetType=Event);
     }
 
