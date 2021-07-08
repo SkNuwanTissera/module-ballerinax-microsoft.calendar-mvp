@@ -514,3 +514,18 @@ public enum TimeZone {
     TIMEZONE_ZW = "South Africa Standard Time"
 }
 
+# Get the properties and relationships of the specified calendar object.
+# Calendar Resource
+public type Calendar record {
+    *GeneratedCalendarData;
+    *CalendarMetadata;
+};
+
+public type GeneratedCalendarData record {
+    readonly string id;
+};
+public type CalendarMetadata record {
+    string name?;
+    string color?;
+    boolean? isDefaultCalendar?;
+};
