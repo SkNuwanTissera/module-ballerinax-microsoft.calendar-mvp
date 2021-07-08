@@ -101,20 +101,14 @@ public client class Client {
     remote isolated function addQuickEvent(@display {label: "Title"} string subject, 
                                            @display {label: "Description"} string? description = (),
                                            @display {label: "Calendar ID"} string? calendarId = ()) 
-                                           returns @tainted string|error {
+                                           returns @tainted Event|error { 
+                                            //TODO : Handle optional calenderId
         EventMetadata newEvent = {
             subject:subject,
             body : { content: description.toString() }
         };
         string path = check createUrl([LOGGED_IN_USER, EVENTS]);
-        http:Response response = check self.httpClient->post(<@untainted>path, check newEvent.cloneWithType(json));
-        map<json>|string? event = check handleResponse(response);
-        if (event is map<json>) {
-            Event eventObj = check event.cloneWithType(Event);
-            return eventObj.id;
-        } else {
-            return error(INVALID_RESPONSE);
-        }
+        return check self.httpClient->post(<@untainted>path, check newEvent.cloneWithType(json), targetType=Event);
     }
 
     # Create an event
@@ -127,20 +121,11 @@ public client class Client {
     @display {label: "Create Event"}
     remote isolated function createEvent(@display {label: "Event Metadata"} EventMetadata eventMetadata,
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
-                                         returns @tainted string|error {
+                                         returns @tainted Event|error { 
                                         //TODO : Handle optional calenderId
         string path = check createUrl([LOGGED_IN_USER, EVENTS]);
-        http:Response response = check self.httpClient->post(<@untainted>path, check eventMetadata.cloneWithType(json));
-        map<json>|string? event = check handleResponse(response);
-        if (event is map<json>) {
-            Event eventObj = check event.cloneWithType(Event);
-            return eventObj.id;
-        } else {
-            return error(INVALID_RESPONSE);
-        }
+        return check self.httpClient->post(<@untainted>path, check eventMetadata.cloneWithType(json), targetType=Event);
     }
-
-    //TODO : Handle optional calenderId
 
     # Update an event
     # This updates the properties of a Event object.
@@ -154,10 +139,10 @@ public client class Client {
     remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
                                          @display {label: "Event Metadata"} EventMetadata eventMetadata,
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
-                                         returns @tainted error? {
+                                         returns @tainted Event|error {
+                                         //TODO : Handle optional calenderId
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
-        http:Response response = check self.httpClient->patch(<@untainted>path, check eventMetadata.cloneWithType(json));
-        _ = check handleResponse(response);
+        return check self.httpClient->patch(<@untainted>path, check eventMetadata.cloneWithType(json), targetType=Event);
     }
 
     # Delete an event
