@@ -35,20 +35,22 @@ Configuration configuration = {
 
 Client calendarClient = check new(configuration);
 
-string eventId  = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBDQAAAN9eh_UmTBdAjsEB8aBad68AA3hE180AAAA=";
-string defaultCalendarId = "AQMkADAwATMwMAItMDM2My0wNDM5LTAwAi0wMAoARgAAA3Nxbo35rYBItWnfGtTTavgHAN9eh_UmTBdAjsEB8aBad68AAAIBBgAAAN9eh_UmTBdAjsEB8aBad68AAQ_WzOwAAAA=";
+string eventId  = "";
+string defaultCalendarId = "";
 string[] queryParamSelect = ["$select=subject"];
 string[] queryParamTop = ["$top=1"];
 
 @test:Config {
     enable: true,
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    groups: ["events"],
+    before: testCreateEvent,
+    after: testDeleteEvent
 }
 function testGetEvent() {
     log:printInfo("client->testGetEvent()"); 
     Event|error event = calendarClient->getEvent(eventId);
     if(event is Event) {
-        log:printInfo("Event received with ID : " + event.toString());
+        log:printInfo("Event received with ID : " + event.id.toString());
     } else {
         test:assertFail(msg = event.message());
     }
@@ -57,7 +59,9 @@ function testGetEvent() {
 
 @test:Config {
     enable: true,
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    groups: ["events"],
+    before: testCreateEvent,
+    after: testDeleteEvent
 }
 function testGetEventWithPreferenceHeaders() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()"); 
@@ -72,13 +76,15 @@ function testGetEventWithPreferenceHeaders() {
 
 @test:Config {
     enable: true,
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    groups: ["events"],
+    before: testCreateEvent,
+    after: testDeleteEvent
 }
 function testGetEventWithQueryParameters() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()"); 
     Event|error event = calendarClient->getEvent(eventId, queryParams=queryParamSelect);
     if(event is Event) {
-        log:printInfo("Event received : " + event.toString());
+        log:printInfo("Event received with ID: " + event.id.toString());
     } else {
         test:assertFail(msg = event.message());
     }
@@ -87,7 +93,9 @@ function testGetEventWithQueryParameters() {
 
 @test:Config {
     enable: true,
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    groups: ["events"],
+    before: testCreateEvent,
+    after: testDeleteEvent
 }
 function testListEvents() {
     log:printInfo("client->testListEvents()"); 
@@ -95,7 +103,7 @@ function testListEvents() {
         = calendarClient->listEvents(timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT, queryParams = queryParamTop);
     if (eventStream is stream<Event, error>) {
         error? e = eventStream.forEach(isolated function (Event event) {
-            log:printInfo(event.toString());
+            log:printInfo(event.id.toString());
         });
     } else {
         test:assertFail(msg = eventStream.message());
@@ -104,15 +112,16 @@ function testListEvents() {
 }
 
 @test:Config {
+    groups: ["events"],
     enable: true
 }
 function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
     string subject = "Test-Subject";
     string body = "Test-Subject";
-    string|error event = calendarClient->addQuickEvent(subject, body, defaultCalendarId);
-    if (event is string) {
-        log:printInfo("Event created with subject : " +event.toString());
+    Event|error event = calendarClient->addQuickEvent(subject, body, defaultCalendarId);
+    if (event is Event) {
+        log:printInfo("Event created with ID : " +event.id.toString());
     } else {
         test:assertFail(msg = event.message());
     }
@@ -121,7 +130,9 @@ function testAddQuickEvent() {
 
 
 @test:Config {
-    enable: true
+    enable: true,
+    groups: ["events"],
+    dependsOn: [testCreateEventWithMultipleLocations]
 }
 function testCreateEvent() {
     log:printInfo("client->testCreateEvent()");
@@ -153,17 +164,18 @@ function testCreateEvent() {
         }],
         allowNewTimeProposals: true
     };
-    string|error GeneratedEventId = calendarClient->createEvent(eventMetadata);
-    if (GeneratedEventId is string) {
-        eventId = GeneratedEventId.toString();
+    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
+    if (generatedEvent is Event) {
+        eventId = generatedEvent.id.toString();
         log:printInfo("Event created with ID : " +eventId.toString());
     } else {
-        test:assertFail(msg = GeneratedEventId.message());
+        test:assertFail(msg = generatedEvent.message());
     }
     io:println("\n\n");
 }
 
 @test:Config {
+    groups: ["events"],
     enable: true
 }
 function testCreateEventWithMultipleLocations() {
@@ -175,11 +187,11 @@ function testCreateEventWithMultipleLocations() {
         content: "Let's kick-start this event planning!"
     },
     'start: {
-        dateTime: "2017-08-30T11:00:00",
+        dateTime: "2021-08-30T11:00:00",
         timeZone: "Pacific Standard Time"
     },
     end: {
-        dateTime: "2017-08-30T12:00:00",
+        dateTime: "2021-08-30T12:00:00",
         timeZone: "Pacific Standard Time"
     },
     attendees: [
@@ -226,19 +238,21 @@ function testCreateEventWithMultipleLocations() {
     ],
     allowNewTimeProposals: true
     };
-    string|error GeneratedEventId = calendarClient->createEvent(eventMetadata);
-    if (GeneratedEventId is string) {
-        eventId = GeneratedEventId.toString();
+    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
+    if (generatedEvent is Event) {
+        eventId = generatedEvent.id.toString();
         log:printInfo("Event created with ID : " +eventId.toString());
     } else {
-        test:assertFail(msg = GeneratedEventId.message());
+        test:assertFail(msg = generatedEvent.message());
     }
     io:println("\n\n");
 }
 
 @test:Config {
     enable: true,
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    groups: ["events"],
+    before: testCreateEvent,
+    after: testDeleteEvent
 }
 function testUpdateEvent() {
     log:printInfo("client->testUpdateEvent()"); 
@@ -268,8 +282,10 @@ function testUpdateEvent() {
         responseRequested : true,
         categories : ["Red category"]
     };
-    error? response = calendarClient->updateEvent(eventId, eventBody);
-    if (response is error) {
+    Event|error response = calendarClient->updateEvent(eventId, eventBody);
+    if (response is Event) {
+        log:printInfo("Event updated, Event ID : " +response.id.toString());
+    } else {
         test:assertFail(msg = response.message());
     }
     io:println("\n\n");
