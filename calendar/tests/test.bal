@@ -120,10 +120,11 @@ function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
     string subject = "Test-Subject";
     string body = "Test-Subject";
-    Event|error event = calendarClient->addQuickEvent(subject, body, specificCalendarId);
+    Event|error event = calendarClient->addQuickEvent(subject, body);
     if (event is Event) {
         log:printInfo("Event created with ID : " +event.id.toString());
     } else {
+        log:printError(event.toString());
         test:assertFail(msg = event.message());
     }
     io:println("\n\n");
@@ -312,7 +313,7 @@ function testDeleteEvent() {
 
 @test:Config {
     enable: true,
-    groups: ["events"],
+    groups: ["calendars"],
     dependsOn: []
 }
 function testCreateCalendar() {
@@ -333,7 +334,7 @@ function testCreateCalendar() {
 
 @test:Config {
     enable: true,
-    groups: ["events"],
+    groups: ["calendars"],
     dependsOn: []
 }
 function testDeleteCalendar() {
