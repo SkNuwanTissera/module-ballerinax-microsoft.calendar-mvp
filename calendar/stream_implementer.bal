@@ -84,3 +84,68 @@ class EventStream {
         }
     }
 }
+
+class CalendarStream {
+    private Calendar[] currentEntries = [];
+    private string nextLink;
+    int index = 0;
+    private final http:Client httpClient;
+    private final string path;
+
+     isolated function init(http:Client httpClient, string path) returns @tainted error? {
+        self.httpClient = httpClient;
+        self.path = path;
+        self.nextLink = EMPTY_STRING;
+        self.currentEntries = check self.fetchRecordsInitial();
+    }
+
+    public isolated function next() returns @tainted record {| Calendar value; |}|error? {
+        if(self.index < self.currentEntries.length()) {
+            record {| Calendar value; |} singleRecord = {value: self.currentEntries[self.index]};
+            self.index += 1;
+            return singleRecord;
+        }
+        // This code block is for retrieving the next batch of records when the initial batch is finished.
+        if (self.nextLink != EMPTY_STRING) {
+            self.index = 0;
+            self.currentEntries = check self.fetchRecordsNext();
+            record {| Calendar value; |} singleRecord = {value: self.currentEntries[self.index]};
+            self.index += 1;
+            return singleRecord;
+        }
+    }
+
+    isolated function fetchRecordsInitial() returns @tainted Calendar[]|error {
+        http:Response response 
+            = check self.httpClient->get(self.path);
+        _ = check handleResponse(response);
+        return check self.getAndConvertToCalendarArray(response);
+    }
+    
+    isolated function fetchRecordsNext() returns @tainted Calendar[]|error {
+        http:Client nextPageClient = check new (self.nextLink);
+        http:Response response 
+            = check nextPageClient->get(EMPTY_STRING);
+        return check self.getAndConvertToCalendarArray(response);
+    }
+
+    isolated function getAndConvertToCalendarArray(http:Response response) returns @tainted Calendar[]|error {
+        Calendar[] calendars = [];
+        map<json>|string? handledResponse = check handleResponse(response);
+        if (handledResponse is map<json>) {
+            self.nextLink = let var link = handledResponse["@odata.nextLink"] in link is string ? link : EMPTY_STRING;
+            json values = check handledResponse.value;
+            if (values is json[]) {
+                foreach json item in values {
+                    Calendar convertedItem = check item.cloneWithType(Calendar);
+                    calendars.push(convertedItem);
+                }
+                return calendars;
+            } else {
+                return error(INVALID_PAYLOAD);
+            }
+        } else {
+            return error(INVALID_RESPONSE);
+        }
+    }
+}
