@@ -37,7 +37,8 @@ Client calendarClient = check new(configuration);
 
 string eventId  = "";
 string defaultCalendarId = "";
-string[] queryParamSelect = ["$select=subject"];
+string specificCalendarId = "";
+string[] queryParamSelect = ["$select=subject"]; 
 string[] queryParamTop = ["$top=1"];
 
 @test:Config {
@@ -119,7 +120,7 @@ function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
     string subject = "Test-Subject";
     string body = "Test-Subject";
-    Event|error event = calendarClient->addQuickEvent(subject, body);
+    Event|error event = calendarClient->addQuickEvent(subject, body, specificCalendarId);
     if (event is Event) {
         log:printInfo("Event created with ID : " +event.id.toString());
     } else {
@@ -127,7 +128,6 @@ function testAddQuickEvent() {
     }
     io:println("\n\n");
 }
-
 
 @test:Config {
     enable: true,
@@ -293,6 +293,7 @@ function testUpdateEvent() {
 
 @test:Config {
     enable: true,
+    groups: ["events"],
     dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
 }
 function testDeleteEvent() {
@@ -300,7 +301,106 @@ function testDeleteEvent() {
     error? response = calendarClient->deleteEvent(eventId);
     if (response is error) {
         test:assertFail(msg = response.message());
+    } else {
+        log:printInfo("Event deleted with ID : " +eventId);
     }
     io:println("\n\n");
 
+}
+
+// Tests related to Calendar
+
+@test:Config {
+    enable: true,
+    groups: ["events"],
+    dependsOn: []
+}
+function testCreateCalendar() {
+    log:printInfo("client->testCreateCalendar()"); 
+    CalendarMetadata calendarMetadata = {
+        name: "Ballerina-Test"
+    };
+    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
+    if (response is Calendar) {
+        specificCalendarId = response.id.toString();
+        log:printInfo("Calendar created with ID : " +specificCalendarId);
+    } else {
+        log:printError(response.toString());
+        test:assertFail(msg = response.message());
+    }
+    io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    groups: ["events"],
+    dependsOn: []
+}
+function testDeleteCalendar() {
+    log:printInfo("client->testDeleteCalendar()"); 
+    error? response = calendarClient->deleteCalendar(specificCalendarId);
+    if (response is error) {
+        test:assertFail(msg = response.message());
+    } else {
+        log:printInfo("Calendar deleted with ID : " +specificCalendarId);
+    }
+    io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    groups: ["calendars"],
+    before: testCreateCalendar,
+    after: testDeleteCalendar
+}
+function testGetCalendar() {
+    log:printInfo("client->testGetCalendar()"); 
+    Calendar|error response = calendarClient->getCalendar(specificCalendarId);
+    if (response is Calendar) {
+        log:printInfo("Calendar received with ID : " +response.toString());
+    } else {
+        log:printError(response.toString());
+        test:assertFail(msg = response.message());
+    }
+    io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    groups: ["calendars"],
+    before: testCreateCalendar,
+    after: testDeleteCalendar
+}
+function testUpdateCalendar() {
+    log:printInfo("client->testUpdateCalendar()"); 
+    string newName = "Updated calendar";
+    string newColor = "7";
+    boolean makeDefault = false;
+    Calendar|error response = calendarClient->updateCalendar(specificCalendarId, newName, newColor, makeDefault);
+    if (response is Calendar) {
+        log:printInfo("Calendar updated, Calendar ID : " +response.id.toString());
+    } else {
+        log:printError(response.toString());
+        test:assertFail(msg = response.message());
+    }
+    io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    groups: ["calendars"],
+    before: testCreateEvent,
+    after: testDeleteEvent
+}
+function testListCalendars() {
+    log:printInfo("client->testListCalendars()"); 
+    stream<Calendar, error>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
+    if (eventStream is stream<Calendar, error>) {
+        error? e = eventStream.forEach(isolated function (Calendar calendar) {
+            log:printInfo(calendar.id.toString());
+        });
+    } else {
+        test:assertFail(msg = eventStream.message());
+    }
+    io:println("\n\n");
 }
