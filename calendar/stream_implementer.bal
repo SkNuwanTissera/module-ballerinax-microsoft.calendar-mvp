@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/io;
 
 class EventStream {
     private Event[] currentEntries = [];
@@ -54,8 +53,7 @@ class EventStream {
     isolated function fetchRecordsInitial() returns @tainted Event[]|error {
         http:Response response 
             = check self.httpClient->get(self.path, preparePreferenceHeaderString(self.timeZone, self.contentType));
-        map<json>|string? handledResponse = check handleResponse(response);
-        io:println(handledResponse);
+        _ = check handleResponse(response);
         return check self.getAndConvertToEventArray(response);
     }
     
