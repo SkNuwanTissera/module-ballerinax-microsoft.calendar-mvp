@@ -20,6 +20,7 @@ const string BASE_URL = "https://graph.microsoft.com/v1.0";
 # Path parameters
 const LOGGED_IN_USER = "me";
 const EVENTS = "events";
+const CALENDARS = "calendars";
 
 # Symbols
 const EQUAL_SIGN = "=";
