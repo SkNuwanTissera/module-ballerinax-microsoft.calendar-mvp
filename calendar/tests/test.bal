@@ -119,7 +119,7 @@ function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
     string subject = "Test-Subject";
     string body = "Test-Subject";
-    Event|error event = calendarClient->addQuickEvent(subject, body, defaultCalendarId);
+    Event|error event = calendarClient->addQuickEvent(subject, body);
     if (event is Event) {
         log:printInfo("Event created with ID : " +event.id.toString());
     } else {
