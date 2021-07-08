@@ -165,11 +165,9 @@ public client class Client {
     # API doc : https://docs.microsoft.com/en-us/graph/api/event-delete
     #
     # + eventId - ID of an event. 
-    # + calendarId - Calendar ID of the calendar that you want to delete the event. 
     # + return - `error` if failed.
     @display {label: "Delete Event"}
-    remote isolated function deleteEvent(@display {label: "Event ID"} string eventId, 
-                                         @display {label: "Calendar ID"} string? calendarId = ()) 
+    remote isolated function deleteEvent(@display {label: "Event ID"} string eventId) 
                                          returns @tainted error? {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
         http:Response response = check self.httpClient->delete(<@untainted>path);
