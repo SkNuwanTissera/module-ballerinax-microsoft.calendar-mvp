@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/log;
 
-isolated function createUrl(string[] pathParameters, string[] queryParameters = []) returns string|error {
+isolated function createUrl(string[] pathParameters, string? queryParameters = ()) returns string|error {
     string url = EMPTY_STRING;
     if (pathParameters.length() > ZERO) {
         foreach string element in pathParameters {
@@ -28,11 +28,9 @@ isolated function createUrl(string[] pathParameters, string[] queryParameters = 
             url += element;
         }
     }
-    if (queryParameters.length() > ZERO) {
-        url = url + check appendQueryOption(queryParameters[ZERO], QUESTION_MARK);
-        foreach string element in queryParameters.slice(1, queryParameters.length()) {
-            url += check appendQueryOption(element, AMPERSAND);
-        }
+    if (queryParameters is string) {
+        url = url + QUESTION_MARK + queryParameters;
+        io:println(url);
     }
     return url;
 }
