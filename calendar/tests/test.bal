@@ -29,7 +29,6 @@ Configuration configuration = {
         refreshToken : refreshToken,
         clientId : clientId,
         clientSecret : clientSecret
-        // scopes: ["offline_access","https://graph.microsoft.com/Files.ReadWrite.All"]
     }
 };
 
@@ -38,9 +37,11 @@ Client calendarClient = check new(configuration);
 string eventId  = "";
 string defaultCalendarId = "";
 string specificCalendarId = "";
-string[] queryParamSelect = ["$select=subject"]; 
-string[] queryParamTop = ["$top=1"];
+string queryParamSelect = "$select=subject"; 
+string queryParamTop = "$top=1";
+string queryParamCount = "$count=true";
 
+// Tests related to `Event` resource operations
 @test:Config {
     enable: true,
     groups: ["events"],
@@ -94,18 +95,17 @@ function testGetEventWithQueryParameters() {
 
 @test:Config {
     enable: true,
-    groups: ["events"],
-    before: testCreateEvent,
-    after: testDeleteEvent
+    groups: ["events"]
 }
 function testListEvents() {
     log:printInfo("client->testListEvents()"); 
     stream<Event, error>|error eventStream 
+        // = calendarClient->listEvents();
         = calendarClient->listEvents(timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT, queryParams = queryParamTop);
     if (eventStream is stream<Event, error>) {
         error? e = eventStream.forEach(isolated function (Event event) {
-            log:printInfo(event.id.toString());
-        });
+           log:printInfo(event.id.toString());
+        }); //TODO : Add calling next() 
     } else {
         test:assertFail(msg = eventStream.message());
     }
@@ -114,7 +114,8 @@ function testListEvents() {
 
 @test:Config {
     groups: ["events"],
-    enable: true
+    enable: true,
+    after: testDeleteEvent
 }
 function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
@@ -122,7 +123,8 @@ function testAddQuickEvent() {
     string body = "Test-Subject";
     Event|error event = calendarClient->addQuickEvent(subject, body);
     if (event is Event) {
-        log:printInfo("Event created with ID : " +event.id.toString());
+        eventId = event.id.toString();
+        log:printInfo("Event created with ID : " +eventId);
     } else {
         log:printError(event.toString());
         test:assertFail(msg = event.message());
@@ -133,14 +135,14 @@ function testAddQuickEvent() {
 @test:Config {
     enable: true,
     groups: ["events"],
-    dependsOn: [testCreateEventWithMultipleLocations]
+    after: testDeleteEvent
 }
 function testCreateEvent() {
     log:printInfo("client->testCreateEvent()");
     EventMetadata eventMetadata = {
-        subject: "Test-Subject-1",
+        subject: "Test-Subject",
         body : {
-            content: "Test-Body-1"
+            content: "Test-Body"
         },
         'start: {
             dateTime: "2021-07-16T12:00:00",
@@ -177,7 +179,8 @@ function testCreateEvent() {
 
 @test:Config {
     groups: ["events"],
-    enable: true
+    enable: true,
+    after: testDeleteEvent
 }
 function testCreateEventWithMultipleLocations() {
     log:printInfo("client->testCreateEventWithMultipleLocations()");
@@ -242,7 +245,7 @@ function testCreateEventWithMultipleLocations() {
     Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
     if (generatedEvent is Event) {
         eventId = generatedEvent.id.toString();
-        log:printInfo("Event created with ID : " +eventId.toString());
+        log:printInfo("Event created with ID : " +eventId);
     } else {
         test:assertFail(msg = generatedEvent.message());
     }
@@ -295,7 +298,7 @@ function testUpdateEvent() {
 @test:Config {
     enable: true,
     groups: ["events"],
-    dependsOn: [testCreateEvent, testCreateEventWithMultipleLocations]
+    dataProvider: testCreateEvent
 }
 function testDeleteEvent() {
     log:printInfo("client->testDeleteEvent()"); 
@@ -309,22 +312,18 @@ function testDeleteEvent() {
 
 }
 
-// Tests related to Calendar
-
+// Tests related to `Calendar` resource operations
 @test:Config {
     enable: true,
     groups: ["calendars"],
-    dependsOn: []
+    before: testCreateCalendar,
+    after: testDeleteCalendar
 }
-function testCreateCalendar() {
-    log:printInfo("client->testCreateCalendar()"); 
-    CalendarMetadata calendarMetadata = {
-        name: "Ballerina-Test"
-    };
-    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
+function testGetCalendar() {
+    log:printInfo("client->testGetCalendar()"); 
+    Calendar|error response = calendarClient->getCalendar(specificCalendarId);
     if (response is Calendar) {
-        specificCalendarId = response.id.toString();
-        log:printInfo("Calendar created with ID : " +specificCalendarId);
+        log:printInfo("Calendar received with ID : " +response.id.toString());
     } else {
         log:printError(response.toString());
         test:assertFail(msg = response.message());
@@ -335,7 +334,7 @@ function testCreateCalendar() {
 @test:Config {
     enable: true,
     groups: ["calendars"],
-    dependsOn: []
+    dataProvider: testCreateCalendar
 }
 function testDeleteCalendar() {
     log:printInfo("client->testDeleteCalendar()"); 
@@ -351,35 +350,18 @@ function testDeleteCalendar() {
 @test:Config {
     enable: true,
     groups: ["calendars"],
-    before: testCreateCalendar,
-    after: testDeleteCalendar
-}
-function testGetCalendar() {
-    log:printInfo("client->testGetCalendar()"); 
-    Calendar|error response = calendarClient->getCalendar(specificCalendarId);
-    if (response is Calendar) {
-        log:printInfo("Calendar received with ID : " +response.toString());
-    } else {
-        log:printError(response.toString());
-        test:assertFail(msg = response.message());
-    }
-    io:println("\n\n");
-}
-
-@test:Config {
-    enable: true,
-    groups: ["calendars"],
-    before: testCreateCalendar,
+    dataProvider: testCreateCalendar,
     after: testDeleteCalendar
 }
 function testUpdateCalendar() {
     log:printInfo("client->testUpdateCalendar()"); 
-    string newName = "Updated calendar";
-    string newColor = "7";
+    string newName = "Updated ballerina calendar";
+    CalendarColor newColor = CALENDAR_COLOR_AUTO;
     boolean makeDefault = false;
     Calendar|error response = calendarClient->updateCalendar(specificCalendarId, newName, newColor, makeDefault);
     if (response is Calendar) {
-        log:printInfo("Calendar updated, Calendar ID : " +response.id.toString());
+        specificCalendarId = response.id.toString();
+        log:printInfo("Calendar updated, Calendar ID : " +specificCalendarId);
     } else {
         log:printError(response.toString());
         test:assertFail(msg = response.message());
@@ -390,8 +372,8 @@ function testUpdateCalendar() {
 @test:Config {
     enable: true,
     groups: ["calendars"],
-    before: testCreateEvent,
-    after: testDeleteEvent
+    before: testCreateCalendar,
+    after: testDeleteCalendar
 }
 function testListCalendars() {
     log:printInfo("client->testListCalendars()"); 
@@ -402,6 +384,27 @@ function testListCalendars() {
         });
     } else {
         test:assertFail(msg = eventStream.message());
+    }
+    io:println("\n\n");
+}
+
+@test:Config {
+    enable: true,
+    groups: ["calendars"],
+    after: testDeleteCalendar
+}
+function testCreateCalendar() {
+    log:printInfo("client->testCreateCalendar()"); 
+    CalendarMetadata calendarMetadata = {
+       name: "Ballerina-Test-Calendar"
+    };
+    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
+    if (response is Calendar) {
+        specificCalendarId = response.id.toString();
+        log:printInfo("Calendar created with ID : " +specificCalendarId);
+    } else {
+        log:printError(response.toString());
+        test:assertFail(msg = response.message());
     }
     io:println("\n\n");
 }
