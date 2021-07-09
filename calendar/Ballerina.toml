@@ -1,10 +1,10 @@
 [package]
 org= "ballerinax"
-name= "microsoft.calendar"
+name= "microsoft.outlook.calendar"
 version= "1.0.1-SNAPSHOT"
 authors = ["Ballerina"]
-keywords = ["Microsoft", "Calendar"]
-repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.calendar"
+keywords = ["Microsoft", "Outlook", "Calendar"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar"
 license = ["Apache-2.0"]
 
 [build-options]
