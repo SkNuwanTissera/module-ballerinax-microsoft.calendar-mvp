@@ -19,18 +19,18 @@ import ballerina/http;
 class EventStream {
     private Event[] currentEntries = [];
     private string nextLink;
-    private string timeZone;
-    private string contentType;
+    private string? timeZone;
+    private string? contentType;
     int index = 0;
     private final http:Client httpClient;
     private final string path;
 
-     isolated function init(http:Client httpClient, string path, TimeZone? timeZone, ContentType? contentType) returns @tainted error? {
+     isolated function init(http:Client httpClient, string path, TimeZone? timeZone = (), ContentType? contentType= ()) returns @tainted error? {
         self.httpClient = httpClient;
         self.path = path;
         self.nextLink = EMPTY_STRING;
-        self.timeZone = timeZone.toString();
-        self.contentType = contentType.toString();
+        self.timeZone = timeZone;
+        self.contentType = contentType;
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
