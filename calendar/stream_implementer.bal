@@ -21,16 +21,21 @@ class EventStream {
     private string nextLink;
     private string? timeZone;
     private string? contentType;
+    private string? queryPraram;
     int index = 0;
     private final http:Client httpClient;
     private final string path;
+    Configuration config;
 
-     isolated function init(http:Client httpClient, string path, TimeZone? timeZone = (), ContentType? contentType= ()) returns @tainted error? {
+     isolated function init(Configuration config, http:Client httpClient, string path, TimeZone? timeZone = (), 
+                                    ContentType? contentType= (), string? queryPraram = ()) returns @tainted error? {
+        self.config = config;
         self.httpClient = httpClient;
         self.path = path;
         self.nextLink = EMPTY_STRING;
         self.timeZone = timeZone;
         self.contentType = contentType;
+        self.queryPraram = queryPraram;
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
@@ -41,7 +46,7 @@ class EventStream {
             return singleRecord;
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished.
-        if (self.nextLink != EMPTY_STRING) {
+        if (self.nextLink != EMPTY_STRING && !self.queryPraram.toString().includes("$top")) {
             self.index = 0;
             self.currentEntries = check self.fetchRecordsNext();
             record {| Event value; |} singleRecord = {value: self.currentEntries[self.index]};
@@ -58,7 +63,10 @@ class EventStream {
     }
     
     isolated function fetchRecordsNext() returns @tainted Event[]|error {
-        http:Client nextPageClient = check new (self.nextLink);
+        http:Client nextPageClient = check new (self.nextLink, {
+            auth: self.config.clientConfig,
+            secureSocket: self.config?.secureSocketConfig
+        });
         http:Response response 
             = check nextPageClient->get(EMPTY_STRING, preparePreferenceHeaderString(self.timeZone, self.contentType));
         return check self.getAndConvertToEventArray(response);
