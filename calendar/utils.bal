@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/io;
 import ballerina/log;
 
 isolated function createUrl(string[] pathParameters, string? queryParameters = ()) returns string|error {
@@ -30,7 +29,6 @@ isolated function createUrl(string[] pathParameters, string? queryParameters = (
     }
     if (queryParameters is string) {
         url = url + QUESTION_MARK + queryParameters;
-        io:println(url);
     }
     return url;
 }
@@ -90,18 +88,8 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted ma
     return error (message);
 }
 
-# Get events by Id
-#
-# + httpClient - HTTP Client  
-# + url - Formatted URL 
-# + timeZone - Parameter Description  
-# + contentType - Parameter Description
-# + return - Return Value Description  
-#
-# + return - If successful return `Event`, else `error`
 isolated function getEventById(http:Client httpClient, string url, string? timeZone, string? contentType) returns @tainted Event|error {
     http:Response response = check httpClient->get(url, preparePreferenceHeaderString(timeZone, contentType));
-    io:println(response);
     json event = check handleResponse(response);
     return check event.cloneWithType(Event);
 }
