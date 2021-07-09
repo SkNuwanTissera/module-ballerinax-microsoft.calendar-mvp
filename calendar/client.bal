@@ -33,11 +33,7 @@ public client class Client {
         http:ClientSecureSocket? socketConfig = config?.secureSocketConfig;
         self.httpClient = check new (BASE_URL, {
             auth: clientConfig,
-            secureSocket: socketConfig,
-            cache: {
-                enabled: false // Disabled caching for now due to NLP exception in getting the stream for downloads.
-            },
-            followRedirects: {enabled: true, maxCount: 5}
+            secureSocket: socketConfig
         });
     }
 
