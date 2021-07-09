@@ -77,6 +77,44 @@ public type GeneratedEventData record {
     readonly string webLink?;
 };
 
+# Metadata related to `Event` resource
+#
+# + subject - The text of the event's subject line.  
+# + body - The body of the message associated with the event. It can be in HTML or text format.  
+# + bodyPreview - The preview of the message associated with the event. It is in text format. 
+# + categories - The categories associated with the event.  
+# + originalStartTimeZone - The start time zone that was set when the event was created. 
+#                           A value of tzone://Microsoft/Custom indicates that a legacy custom time zone was set 
+#                           in desktop Outlook.
+# + originalEndTimeZone - The end time zone that was set when the event was created. 
+#                         A value of tzone://Microsoft/Custom indicates that a legacy custom time zone was set 
+#                         in desktop Outlook. 
+# + 'start - The date, time, and time zone that the event starts. By default, the start time is in UTC.  
+# + end - The date, time, and time zone that the event ends. By default, the end time is in UTC.  
+# + location - The location of the event.  
+# + locations - The locations where the event is held or attended from. 
+#               The location and locations properties always correspond with each other. 
+#               If you update the location property, any prior locations in the locations collection would be removed 
+#               and replaced by the new location value.  
+# + attendees - The collection of attendees for the event. 
+# + recurrence - The recurrence pattern for the event.  
+# + allowNewTimeProposals - True if the meeting organizer allows invitees to propose a new time when responding, 
+#                           false otherwise. Optional. Default is true.  
+# + hasAttachments - Set to true if the event has attachments. 
+# + hideAttendees - When set to true, each attendee only sees themselves in the meeting request & meeting Tracking list. 
+#                   Default is false. 
+# + isAllDay - Set to true if the event lasts all day.  
+# + isOnlineMeeting - True if this event has online meeting information, false otherwise. Default is false. Optional.  
+# + isReminderOn - Set to true if an alert is set to remind the user of the event.  
+# + importance - The importance of the event. The possible values are: low, normal, high.  
+# + reminderMinutesBeforeStart - The number of minutes before the event start time that the reminder alert occurs. 
+# + responseRequested - Default is true, which represents the organizer would like an invitee to send a response 
+#                       to the event. 
+# + responseStatus - Indicates the type of response sent in response to an event message. 
+# + sensitivity - The possible values are: normal, personal, private, confidential. 
+# + showAs - The status to show. The possible values are: free, tentative, busy, oof, workingElsewhere, unknown.  
+# + onlineMeetingProvider - Represents the online meeting service provider. 
+#                           The possible values are teamsForBusiness, skypeForBusiness, and skypeForConsumer. Optional.  
 public type EventMetadata record {
     string? subject?;
     ItemBody body?;
@@ -105,6 +143,10 @@ public type EventMetadata record {
     OnlineMeetingProviderType onlineMeetingProvider?;
 };
 
+# The recurrence pattern and range.
+#
+# + pattern - The frequency of an event. Do not specify for a one-time access review.
+# + range - The duration of an event. 
 public type PatternedRecurrence record {
     RecurrencePattern pattern?;
     RecurrenceRange range?;
