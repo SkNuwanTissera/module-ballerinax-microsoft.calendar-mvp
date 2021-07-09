@@ -28,7 +28,7 @@ class EventStream {
     Configuration config;
 
      isolated function init(Configuration config, http:Client httpClient, string path, TimeZone? timeZone = (), 
-                                    ContentType? contentType= (), string? queryPraram = ()) returns @tainted error? {
+                                    ContentType? contentType= (), string? queryPraram = ()) returns error? {
         self.config = config;
         self.httpClient = httpClient;
         self.path = path;
@@ -39,7 +39,7 @@ class EventStream {
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
-    public isolated function next() returns @tainted record {| Event value; |}|error? {
+    public isolated function next() returns record {| Event value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| Event value; |} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
@@ -55,14 +55,14 @@ class EventStream {
         }
     }
 
-    isolated function fetchRecordsInitial() returns @tainted Event[]|error {
+    isolated function fetchRecordsInitial() returns Event[]|error {
         http:Response response 
             = check self.httpClient->get(self.path, preparePreferenceHeaderString(self.timeZone, self.contentType));
         _ = check handleResponse(response);
         return check self.getAndConvertToEventArray(response);
     }
     
-    isolated function fetchRecordsNext() returns @tainted Event[]|error {
+    isolated function fetchRecordsNext() returns Event[]|error {
         http:Client nextPageClient = check new (self.nextLink, {
             auth: self.config.clientConfig,
             secureSocket: self.config?.secureSocketConfig
@@ -72,7 +72,7 @@ class EventStream {
         return check self.getAndConvertToEventArray(response);
     }
 
-    isolated function getAndConvertToEventArray(http:Response response) returns @tainted Event[]|error {
+    isolated function getAndConvertToEventArray(http:Response response) returns Event[]|error {
         Event[] events = [];
         map<json>|string? handledResponse = check handleResponse(response);
         if (handledResponse is map<json>) {
@@ -100,14 +100,14 @@ class CalendarStream {
     private final http:Client httpClient;
     private final string path;
 
-     isolated function init(http:Client httpClient, string path) returns @tainted error? {
+     isolated function init(http:Client httpClient, string path) returns error? {
         self.httpClient = httpClient;
         self.path = path;
         self.nextLink = EMPTY_STRING;
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
-    public isolated function next() returns @tainted record {| Calendar value; |}|error? {
+    public isolated function next() returns record {| Calendar value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| Calendar value; |} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
@@ -123,21 +123,21 @@ class CalendarStream {
         }
     }
 
-    isolated function fetchRecordsInitial() returns @tainted Calendar[]|error {
+    isolated function fetchRecordsInitial() returns Calendar[]|error {
         http:Response response 
             = check self.httpClient->get(self.path);
         _ = check handleResponse(response);
         return check self.getAndConvertToCalendarArray(response);
     }
     
-    isolated function fetchRecordsNext() returns @tainted Calendar[]|error {
+    isolated function fetchRecordsNext() returns Calendar[]|error {
         http:Client nextPageClient = check new (self.nextLink);
         http:Response response 
             = check nextPageClient->get(EMPTY_STRING);
         return check self.getAndConvertToCalendarArray(response);
     }
 
-    isolated function getAndConvertToCalendarArray(http:Response response) returns @tainted Calendar[]|error {
+    isolated function getAndConvertToCalendarArray(http:Response response) returns Calendar[]|error {
         Calendar[] calendars = [];
         map<json>|string? handledResponse = check handleResponse(response);
         if (handledResponse is map<json>) {
