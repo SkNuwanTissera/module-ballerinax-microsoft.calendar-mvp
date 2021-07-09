@@ -186,9 +186,9 @@ public client class Client {
     # + calendarId - ID of a calendar. 
     # + return - `error` if failed.
     @display {label: "Delete Calendar"}
-    remote isolated function deleteCalendar(@display {label: "Calendar ID"} string calendarId) returns @tainted error? {
+    remote isolated function deleteCalendar(@display {label: "Calendar ID"} string calendarId) returns error? {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
-        http:Response response = check self.httpClient->delete(<@untainted>path);
+        http:Response response = check self.httpClient->delete(path);
         _ = check handleResponse(response);
     }
 
@@ -225,6 +225,7 @@ public client class Client {
                                             @display {label: "Calendar Color"} CalendarColor? color = (), 
                                             @display {label: "Default Calendar"} boolean? isDefaultCalendar = ()) 
                                             returns Calendar|error {
+
         CalendarMetadata calendarMetadata = {};
         if (name is string) {
             calendarMetadata.name = name;
