@@ -33,6 +33,34 @@ public type Event record {
     *EventMetadata;
 };
 
+# Generated `Event` Data
+#
+# + id - Unique ID for event. Read-only.  
+# + changeKey - Identifies the version of the event object. Every time the event is changed, ChangeKey changes as well. 
+#               This allows Exchange to apply changes to the correct version of the object.
+# + createdDateTime - The Timestamp type represents date and time information using ISO 8601 format and is always 
+#                     in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z  
+# + occurrenceId - Unique ID for occurence.  
+# + transactionId - A custom identifier specified by a client app for the server to avoid redundant POST operations 
+#                   in case of client retries to create the same event. This is useful when low network connectivity 
+#                   causes the client to time out before receiving a response from the server for the client's prior 
+#                   create-event request. After you set transactionId when creating an event, you cannot change 
+#                   transactionId in a subsequent update. 
+#                   This property is only returned in a response payload if an app has set it. Optional. 
+# + seriesMasterId - The ID for the recurring series master item, if this event is part of a recurring series.  
+# + onlineMeetingUrl - A URL for an online meeting. 
+#                      The property is set only when an organizer specifies an event as an online meeting such as a 
+#                      Skype meeting. Read-only.  
+# + iCalUId - A unique identifier for an event across calendars. This ID is different for each occurrence in a 
+#             recurring series. Read-only.  
+# + onlineMeeting - Details for an attendee to join the meeting online. Read-only.  
+# + organizer - The organizer of the event. 
+# + originalStart - The Timestamp type represents date and time information using ISO 8601 format and 
+#                   is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z  
+# + 'type - The event type. The possible values are: singleInstance, occurrence, exception, seriesMaster. Read-only. 
+# + webLink - The URL to open the event in Outlook on the web.Outlook on the web opens the event in the browser 
+#             if you are signed in to your mailbox. Otherwise, Outlook on the web prompts you to sign in. 
+#             This URL cannot be accessed from within an iFrame.  
 public type GeneratedEventData record {
     readonly string id;
     string changeKey?;
