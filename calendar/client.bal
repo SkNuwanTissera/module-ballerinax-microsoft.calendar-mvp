@@ -81,7 +81,6 @@ public client class Client {
                                         @display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                         returns @tainted stream<Event, error>|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS], queryParams);
-        log:printInfo(">>>>>>>" +path.toString());
         EventStream objectInstance = check new (self.httpClient, <@untainted>path, timeZone, contentType);
         stream<Event, error> finalStream = new (objectInstance);
         return finalStream;
@@ -100,10 +99,8 @@ public client class Client {
                                            @display {label: "Description"} string? description = (),
                                            @display {label: "Calendar ID"} string? calendarId = ()) 
                                            returns @tainted Event|error { 
-        EventMetadata newEvent = {
-            subject:subject,
-            body : { content: description.toString() }
-        };
+        EventMetadata newEvent = { subject:subject };
+        if(description is string) { newEvent.body = {content: description.toString()};}
         string path = EMPTY_STRING;
         if (calendarId is string){
             path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]);
