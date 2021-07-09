@@ -52,6 +52,7 @@ function testGetEvent() {
     log:printInfo("client->testGetEvent()"); 
     Event|error event = calendarClient->getEvent(eventId);
     if(event is Event) {
+        test:assertEquals(event.id, eventId, "Invalid Event ID");
         log:printInfo("Event received with ID : " + event.id.toString());
     } else {
         test:assertFail(msg = event.message());
@@ -69,6 +70,7 @@ function testGetEventWithPreferenceHeaders() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()"); 
     Event|error event = calendarClient->getEvent(eventId, timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT);
     if(event is Event) {
+        test:assertEquals(event.id, eventId, "Invalid Event ID");
         log:printInfo("Event received with requested timezone : " + event?.'start?.timeZone.toString());
     } else {
         test:assertFail(msg = event.message());
@@ -86,6 +88,7 @@ function testGetEventWithQueryParameters() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()"); 
     Event|error event = calendarClient->getEvent(eventId, queryParams=queryParamSelect);
     if(event is Event) {
+        test:assertEquals(event.id, eventId, "Invalid Event ID");
         log:printInfo("Event received with ID: " + event.id.toString());
     } else {
         test:assertFail(msg = event.message());
@@ -123,6 +126,7 @@ function testAddQuickEvent() {
     string body = "Test-Body";
     Event|error event = calendarClient->addQuickEvent(subject, body);
     if (event is Event) {
+        test:assertNotEquals(event.id, EMPTY_STRING, "Empty Event ID");
         eventId = event.id.toString();
         log:printInfo("Event created with ID : " +eventId);
     } else {
@@ -169,6 +173,7 @@ function testCreateEvent() {
     };
     Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
     if (generatedEvent is Event) {
+        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
         eventId = generatedEvent.id.toString();
         log:printInfo("Event created with ID : " +eventId.toString());
     } else {
@@ -244,6 +249,7 @@ function testCreateEventWithMultipleLocations() {
     };
     Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
     if (generatedEvent is Event) {
+        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
         eventId = generatedEvent.id.toString();
         log:printInfo("Event created with ID : " +eventId);
     } else {
@@ -288,6 +294,7 @@ function testUpdateEvent() {
     };
     Event|error response = calendarClient->updateEvent(eventId, eventBody);
     if (response is Event) {
+        test:assertEquals(response.id, eventId, "Invalid Event ID");
         log:printInfo("Event updated, Event ID : " +response.id.toString());
     } else {
         test:assertFail(msg = response.message());
@@ -323,6 +330,7 @@ function testGetCalendar() {
     log:printInfo("client->testGetCalendar()"); 
     Calendar|error response = calendarClient->getCalendar(specificCalendarId);
     if (response is Calendar) {
+        test:assertEquals(response.id.toString(), specificCalendarId, "Invalid Calender ID.");
         log:printInfo("Calendar received with ID : " +response.id.toString());
     } else {
         log:printError(response.toString());
@@ -360,7 +368,7 @@ function testUpdateCalendar() {
     boolean makeDefault = false;
     Calendar|error response = calendarClient->updateCalendar(specificCalendarId, newName, newColor, makeDefault);
     if (response is Calendar) {
-        test:assertEquals(response.id.toString(), specificCalendarId, "Invalid Calender ID, Calendar is not updated.");
+        test:assertEquals(response.id.toString(), specificCalendarId, "Invalid Calender ID.");
         log:printInfo("Calendar updated, Calendar ID : " +response.toString());
     } else {
         log:printError(response.toString());
@@ -380,6 +388,7 @@ function testListCalendars() {
     stream<Calendar, error>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
     if (eventStream is stream<Calendar, error>) {
         error? e = eventStream.forEach(isolated function (Calendar calendar) {
+            test:assertNotEquals(calendar.id.toString(), EMPTY_STRING, "Empty Calender ID.");
             log:printInfo(calendar.id.toString());
         });
     } else {
@@ -400,6 +409,7 @@ function testCreateCalendar() {
     };
     Calendar|error response = calendarClient->createCalendar(calendarMetadata);
     if (response is Calendar) {
+        test:assertNotEquals(response.id.toString(), EMPTY_STRING, "Empty Calender ID.");
         specificCalendarId = response.id.toString();
         log:printInfo("Calendar created with ID : " +specificCalendarId);
     } else {
