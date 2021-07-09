@@ -104,7 +104,6 @@ public client class Client {
                                            @display {label: "Description"} string? description = (),
                                            @display {label: "Calendar ID"} string? calendarId = ()) 
                                            returns @tainted Event|error { 
-                                            //TODO : Handle optional calenderId
         EventMetadata newEvent = {
             subject:subject,
             body : { content: description.toString() }
@@ -129,7 +128,6 @@ public client class Client {
     remote isolated function createEvent(@display {label: "Event Metadata"} EventMetadata eventMetadata,
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
                                          returns @tainted Event|error { 
-                                        //TODO : Handle optional calenderId
         string path = EMPTY_STRING;
         if (calendarId is string){
             path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]);
@@ -153,7 +151,6 @@ public client class Client {
                                          @display {label: "Event Metadata"} EventMetadata eventMetadata,
                                          @display {label: "Calendar ID"} string? calendarId = ()) 
                                          returns @tainted Event|error {
-                                         //TODO : Handle optional calenderId
         string path = EMPTY_STRING;
         if (calendarId is string){
             path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS, eventId]);
@@ -245,8 +242,7 @@ public client class Client {
         CalendarMetadata calendarMetadata = {};
         if(name is string) {calendarMetadata.name = name;}
         if(color is CalendarColor) {calendarMetadata.color = color;}
-        if(isDefaultCalendar is boolean) {calendarMetadata.isDefaultCalendar = isDefaultCalendar;}
-                                      
+        if(isDefaultCalendar is boolean) {calendarMetadata.isDefaultCalendar = isDefaultCalendar;}                                    
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
         return check self.httpClient->patch(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
     }
