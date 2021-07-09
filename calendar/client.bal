@@ -253,7 +253,7 @@ public client class Client {
     remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                             returns stream<Calendar, error>|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS], queryParams);
-        CalendarStream objectInstance = check new (self.httpClient, path);
+        CalendarStream objectInstance = check new (self.config, self.httpClient, path, queryParams);
         stream<Calendar, error> finalStream = new (objectInstance);
         return finalStream;
     }

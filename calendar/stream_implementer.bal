@@ -22,13 +22,13 @@ class EventStream {
     private string? timeZone;
     private string? contentType;
     private string? queryPraram;
+    Configuration config;
     int index = 0;
     private final http:Client httpClient;
     private final string path;
-    Configuration config;
 
-     isolated function init(Configuration config, http:Client httpClient, string path, TimeZone? timeZone = (), 
-                                    ContentType? contentType= (), string? queryPraram = ()) returns error? {
+    isolated function init(Configuration config, http:Client httpClient, string path, TimeZone? timeZone = (), 
+                                    ContentType? contentType = (), string? queryPraram = ()) returns error? {
         self.config = config;
         self.httpClient = httpClient;
         self.path = path;
@@ -39,9 +39,9 @@ class EventStream {
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
-    public isolated function next() returns record {| Event value; |}|error? {
-        if(self.index < self.currentEntries.length()) {
-            record {| Event value; |} singleRecord = {value: self.currentEntries[self.index]};
+    public isolated function next() returns record {|Event value;|}|error? {
+        if (self.index < self.currentEntries.length()) {
+            record {|Event value;|} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
             return singleRecord;
         }
@@ -49,7 +49,7 @@ class EventStream {
         if (self.nextLink != EMPTY_STRING && !self.queryPraram.toString().includes("$top")) {
             self.index = 0;
             self.currentEntries = check self.fetchRecordsNext();
-            record {| Event value; |} singleRecord = {value: self.currentEntries[self.index]};
+            record {|Event value;|} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
             return singleRecord;
         }
@@ -61,7 +61,7 @@ class EventStream {
         _ = check handleResponse(response);
         return check self.getAndConvertToEventArray(response);
     }
-    
+
     isolated function fetchRecordsNext() returns Event[]|error {
         http:Client nextPageClient = check new (self.nextLink, {
             auth: self.config.clientConfig,
@@ -76,7 +76,8 @@ class EventStream {
         Event[] events = [];
         map<json>|string? handledResponse = check handleResponse(response);
         if (handledResponse is map<json>) {
-            self.nextLink = let var link = handledResponse["@odata.nextLink"] in link is string ? link : EMPTY_STRING;
+            self.nextLink = let var link = handledResponse["@odata.nextLink"]
+                in link is string ? link : EMPTY_STRING;
             json values = check handledResponse.value;
             if (values is json[]) {
                 foreach json item in values {
@@ -99,25 +100,30 @@ class CalendarStream {
     int index = 0;
     private final http:Client httpClient;
     private final string path;
+    private string? queryPraram;
+    Configuration config;
 
-     isolated function init(http:Client httpClient, string path) returns error? {
+    isolated function init(Configuration config, http:Client httpClient, string path, string? queryPraram = ()) 
+    returns error? {
         self.httpClient = httpClient;
         self.path = path;
+        self.queryPraram = queryPraram;
+        self.config = config;
         self.nextLink = EMPTY_STRING;
         self.currentEntries = check self.fetchRecordsInitial();
     }
 
-    public isolated function next() returns record {| Calendar value; |}|error? {
-        if(self.index < self.currentEntries.length()) {
-            record {| Calendar value; |} singleRecord = {value: self.currentEntries[self.index]};
+    public isolated function next() returns record {|Calendar value;|}|error? {
+        if (self.index < self.currentEntries.length()) {
+            record {|Calendar value;|} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
             return singleRecord;
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished.
-        if (self.nextLink != EMPTY_STRING) {
+        if (self.nextLink != EMPTY_STRING && !self.queryPraram.toString().includes("$top")) {
             self.index = 0;
             self.currentEntries = check self.fetchRecordsNext();
-            record {| Calendar value; |} singleRecord = {value: self.currentEntries[self.index]};
+            record {|Calendar value;|} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
             return singleRecord;
         }
@@ -129,9 +135,12 @@ class CalendarStream {
         _ = check handleResponse(response);
         return check self.getAndConvertToCalendarArray(response);
     }
-    
+
     isolated function fetchRecordsNext() returns Calendar[]|error {
-        http:Client nextPageClient = check new (self.nextLink);
+        http:Client nextPageClient = check new (self.nextLink, {
+            auth: self.config.clientConfig,
+            secureSocket: self.config?.secureSocketConfig
+        });
         http:Response response 
             = check nextPageClient->get(EMPTY_STRING);
         return check self.getAndConvertToCalendarArray(response);
@@ -141,7 +150,8 @@ class CalendarStream {
         Calendar[] calendars = [];
         map<json>|string? handledResponse = check handleResponse(response);
         if (handledResponse is map<json>) {
-            self.nextLink = let var link = handledResponse["@odata.nextLink"] in link is string ? link : EMPTY_STRING;
+            self.nextLink = let var link = handledResponse["@odata.nextLink"]
+                in link is string ? link : EMPTY_STRING;
             json values = check handledResponse.value;
             if (values is json[]) {
                 foreach json item in values {
