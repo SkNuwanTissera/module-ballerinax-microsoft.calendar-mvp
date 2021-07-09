@@ -105,7 +105,7 @@ public client class Client {
                                             returns @tainted Event|error {
         EventMetadata newEvent = {subject: subject};
         if (description is string) {
-            newEvent.body = {content: description.toString()}; //TODO : elvis
+            newEvent.body = {content: description.toString()};
         }
         string path = calendarId is string ? check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]) 
         : check createUrl([LOGGED_IN_USER, EVENTS]);
@@ -123,12 +123,8 @@ public client class Client {
     remote isolated function createEvent(@display {label: "Event Metadata"} EventMetadata eventMetadata, 
                                         @display {label: "Calendar ID"} string? calendarId = ()) 
                                         returns @tainted Event|error {
-        string path = EMPTY_STRING; //TODO : elvis
-        if (calendarId is string) {
-            path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]);
-        } else {
-            path = check createUrl([LOGGED_IN_USER, EVENTS]);
-        }
+        string path = calendarId is string ? check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]) 
+        : check createUrl([LOGGED_IN_USER, EVENTS]);
         log:printDebug(path.toString());
         return check self.httpClient->post(<@untainted>path, check eventMetadata.cloneWithType(json), targetType = Event);
     }
@@ -143,16 +139,12 @@ public client class Client {
     # + return - `Event` if success. Else `error`.
     @display {label: "Update Event"}
     remote isolated function updateEvent(@display {label: "Event ID"} string eventId, 
-                                        @display {label: "Event Metadata"} EventMetadata eventMetadata, 
-                                        @display {label: "Calendar ID"} string? calendarId = ()) 
-                                        returns @tainted Event|error {
-        string path = EMPTY_STRING;
-        if (calendarId is string) {
-            path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS, eventId]);
-        } else {
-            path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
-        }
-        return check self.httpClient->patch(<@untainted>path, check eventMetadata.cloneWithType(json), targetType = Event);
+                                         @display {label: "Event Metadata"} EventMetadata eventMetadata, 
+                                         @display {label: "Calendar ID"} string? calendarId = ()) 
+                                         returns Event|error {
+        string path = calendarId is string ? check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS, eventId]) 
+        : check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
+        return check self.httpClient->patch(path, check eventMetadata.cloneWithType(json), targetType = Event);
     }
 
     # Delete an event
@@ -163,9 +155,9 @@ public client class Client {
     # + return - `error` if failed.
     @display {label: "Delete Event"}
     remote isolated function deleteEvent(@display {label: "Event ID"} string eventId) 
-                                        returns @tainted error? { //TODO : remove taints
+                                        returns error? { //TODO : remove taints
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId]);
-        http:Response response = check self.httpClient->delete(<@untainted>path);
+        http:Response response = check self.httpClient->delete(path);
         _ = check handleResponse(response);
     }
 
@@ -182,9 +174,9 @@ public client class Client {
     # + return - `Calender` if success. Else `error`.
     @display {label: "Create Calender"}
     remote isolated function createCalendar(@display {label: "Calendar Metadata"} CalendarMetadata calendarMetadata) 
-                                            returns @tainted Calendar|error {
+                                            returns Calendar|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS]);
-        return check self.httpClient->post(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType = Calendar);
+        return check self.httpClient->post(path, check calendarMetadata.cloneWithType(json), targetType = Calendar);
     }
 
     # Delete a calendar
@@ -213,9 +205,9 @@ public client class Client {
     @display {label: "Get Calendar"}
     remote isolated function getCalendar(@display {label: "Calendar ID"} string calendarId, 
                                         @display {label: "Optional Query Parameters"} string? queryParams = ()) 
-                                        returns @tainted Calendar|error {
+                                        returns Calendar|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId], queryParams);
-        return check self.httpClient->get(<@untainted>path, targetType = Calendar);
+        return check self.httpClient->get(path, targetType = Calendar);
     }
 
     # Update a calender
@@ -232,7 +224,7 @@ public client class Client {
                                             @display {label: "Calendar Name"} string? name = (), 
                                             @display {label: "Calendar Color"} CalendarColor? color = (), 
                                             @display {label: "Default Calendar"} boolean? isDefaultCalendar = ()) 
-                                            returns @tainted Calendar|error {
+                                            returns Calendar|error {
 
         CalendarMetadata calendarMetadata = {};
         if (name is string) {
@@ -245,7 +237,7 @@ public client class Client {
             calendarMetadata.isDefaultCalendar = isDefaultCalendar;
         }
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
-        return check self.httpClient->patch(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
+        return check self.httpClient->patch(path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
     }
 
     # Get list of calendars.
@@ -259,9 +251,9 @@ public client class Client {
     # + return - a stream of `Calendar` if success. Else `error`.
     @display {label: "List Calendars"}
     remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string? queryParams = ()) 
-                                            returns @tainted stream<Calendar, error>|error {
+                                            returns stream<Calendar, error>|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS], queryParams);
-        CalendarStream objectInstance = check new (self.httpClient, <@untainted>path);
+        CalendarStream objectInstance = check new (self.httpClient, path);
         stream<Calendar, error> finalStream = new (objectInstance);
         return finalStream;
     }
