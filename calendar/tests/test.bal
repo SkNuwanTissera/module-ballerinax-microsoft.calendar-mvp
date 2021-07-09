@@ -38,7 +38,7 @@ string eventId  = "";
 string defaultCalendarId = "";
 string specificCalendarId = "";
 string queryParamSelect = "$select=subject"; 
-string queryParamTop = "$top=1";
+string queryParamTop = "$top=5";
 string queryParamCount = "$count=true";
 
 // Tests related to `Event` resource operations
@@ -100,12 +100,11 @@ function testGetEventWithQueryParameters() {
 function testListEvents() {
     log:printInfo("client->testListEvents()"); 
     stream<Event, error>|error eventStream 
-        // = calendarClient->listEvents();
         = calendarClient->listEvents(timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT, queryParams = queryParamTop);
     if (eventStream is stream<Event, error>) {
         error? e = eventStream.forEach(isolated function (Event event) {
            log:printInfo(event.id.toString());
-        }); //TODO : Add calling next() 
+        }); 
     } else {
         test:assertFail(msg = eventStream.message());
     }
@@ -377,7 +376,7 @@ function testUpdateCalendar() {
 }
 function testListCalendars() {
     log:printInfo("client->testListCalendars()"); 
-    stream<Calendar, error>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
+    stream<Calendar, error>|error eventStream = calendarClient->listCalendars();
     if (eventStream is stream<Calendar, error>) {
         error? e = eventStream.forEach(isolated function (Calendar calendar) {
             log:printInfo(calendar.id.toString());
