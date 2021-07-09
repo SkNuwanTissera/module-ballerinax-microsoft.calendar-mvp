@@ -99,10 +99,11 @@ function testGetEventWithQueryParameters() {
 }
 function testListEvents() {
     log:printInfo("client->testListEvents()"); 
-    stream<Event, error>|error eventStream 
+    stream<Event, error?>|error eventStream 
         = calendarClient->listEvents(timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT, queryParams = queryParamTop);
-    if (eventStream is stream<Event, error>) {
+    if (eventStream is stream<Event, error?>) {
         error? e = eventStream.forEach(isolated function (Event event) {
+            test:assertNotEquals(event.id, EMPTY_STRING, "Empty Event ID");
            log:printInfo(event.id.toString());
         }); 
     } else {
@@ -359,8 +360,8 @@ function testUpdateCalendar() {
     boolean makeDefault = false;
     Calendar|error response = calendarClient->updateCalendar(specificCalendarId, newName, newColor, makeDefault);
     if (response is Calendar) {
-        specificCalendarId = response.id.toString();
-        log:printInfo("Calendar updated, Calendar ID : " +specificCalendarId);
+        test:assertEquals(response.id.toString(), specificCalendarId, "Invalid Calender ID, Calendar is not updated.");
+        log:printInfo("Calendar updated, Calendar ID : " +response.toString());
     } else {
         log:printError(response.toString());
         test:assertFail(msg = response.message());
@@ -376,7 +377,7 @@ function testUpdateCalendar() {
 }
 function testListCalendars() {
     log:printInfo("client->testListCalendars()"); 
-    stream<Calendar, error>|error eventStream = calendarClient->listCalendars();
+    stream<Calendar, error>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
     if (eventStream is stream<Calendar, error>) {
         error? e = eventStream.forEach(isolated function (Calendar calendar) {
             log:printInfo(calendar.id.toString());
