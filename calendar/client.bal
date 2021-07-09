@@ -60,10 +60,10 @@ public client class Client {
     # + return - a record `Event` if success. Else `error`.
     @display {label: "Get Event"}
     remote isolated function getEvent(@display {label: "Event ID"} string eventId, 
-                                    @display {label: "Preferred Time Zone"} TimeZone? timeZone = (), 
-                                    @display {label: "Preferred Content Type"} ContentType? contentType = (), 
-                                    @display {label: "Optional Query Parameters"} string? queryParams = ()) 
-                                    returns @tainted Event|error {
+                                      @display {label: "Preferred Time Zone"} TimeZone? timeZone = (), 
+                                      @display {label: "Preferred Content Type"} ContentType? contentType = (), 
+                                      @display {label: "Optional Query Parameters"} string? queryParams = ()) 
+                                      returns Event|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId], queryParams);
         return check getEventById(self.httpClient, path, timeZone, contentType);
     }
@@ -102,14 +102,14 @@ public client class Client {
     remote isolated function addQuickEvent(@display {label: "Title"} string subject, 
                                             @display {label: "Description"} string? description = (), 
                                             @display {label: "Calendar ID"} string? calendarId = ()) 
-                                            returns @tainted Event|error {
+                                            returns Event|error {
         EventMetadata newEvent = {subject: subject};
         if (description is string) {
             newEvent.body = {content: description.toString()};
         }
         string path = calendarId is string ? check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]) 
         : check createUrl([LOGGED_IN_USER, EVENTS]);
-        return check self.httpClient->post(<@untainted>path, check newEvent.cloneWithType(json), targetType = Event);
+        return check self.httpClient->post(path, check newEvent.cloneWithType(json), targetType = Event);
     }
 
     # Create an event
@@ -122,11 +122,11 @@ public client class Client {
     @display {label: "Create Event"}
     remote isolated function createEvent(@display {label: "Event Metadata"} EventMetadata eventMetadata, 
                                         @display {label: "Calendar ID"} string? calendarId = ()) 
-                                        returns @tainted Event|error {
+                                        returns Event|error {
         string path = calendarId is string ? check createUrl([LOGGED_IN_USER, CALENDARS, calendarId, EVENTS]) 
         : check createUrl([LOGGED_IN_USER, EVENTS]);
         log:printDebug(path.toString());
-        return check self.httpClient->post(<@untainted>path, check eventMetadata.cloneWithType(json), targetType = Event);
+        return check self.httpClient->post(path, check eventMetadata.cloneWithType(json), targetType = Event);
     }
 
     # Update an event
@@ -204,8 +204,8 @@ public client class Client {
     # + return - a record `Calendar` if success. Else `error`.
     @display {label: "Get Calendar"}
     remote isolated function getCalendar(@display {label: "Calendar ID"} string calendarId, 
-                                        @display {label: "Optional Query Parameters"} string? queryParams = ()) 
-                                        returns Calendar|error {
+                                         @display {label: "Optional Query Parameters"} string? queryParams = ()) 
+                                         returns Calendar|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId], queryParams);
         return check self.httpClient->get(path, targetType = Calendar);
     }
@@ -225,7 +225,6 @@ public client class Client {
                                             @display {label: "Calendar Color"} CalendarColor? color = (), 
                                             @display {label: "Default Calendar"} boolean? isDefaultCalendar = ()) 
                                             returns Calendar|error {
-
         CalendarMetadata calendarMetadata = {};
         if (name is string) {
             calendarMetadata.name = name;
