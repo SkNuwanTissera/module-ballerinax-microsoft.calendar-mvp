@@ -76,7 +76,7 @@ isolated function validateOdataSystemQueryOption(string queryOptionName, string 
     return isValid;
 }
 
-isolated function handleResponse(http:Response httpResponse) returns @tainted map<json>|error? {
+isolated function handleResponse(http:Response httpResponse) returns map<json>|error? {
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_CREATED|http:STATUS_ACCEPTED) {
         json jsonResponse = check httpResponse.getJsonPayload();
         return <map<json>>jsonResponse;
@@ -88,7 +88,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted ma
     return error (message);
 }
 
-isolated function getEventById(http:Client httpClient, string url, string? timeZone, string? contentType) returns @tainted Event|error {
+isolated function getEventById(http:Client httpClient, string url, string? timeZone, string? contentType) returns Event|error {
     http:Response response = check httpClient->get(url, preparePreferenceHeaderString(timeZone, contentType));
     json event = check handleResponse(response);
     return check event.cloneWithType(Event);
