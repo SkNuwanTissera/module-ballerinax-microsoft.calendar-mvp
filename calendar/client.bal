@@ -62,7 +62,7 @@ public client class Client {
     remote isolated function getEvent(@display {label: "Event ID"} string eventId, 
                                       @display {label: "Preferred Time Zone"} TimeZone? timeZone = (),
                                       @display {label: "Preferred Content Type"} ContentType? contentType = (),
-                                      @display {label: "Optional Query Parameters"} string[] queryParams = []) 
+                                      @display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                       returns @tainted Event|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS, eventId], queryParams);
         return check getEventById(self.httpClient, path, timeZone, contentType);
@@ -82,9 +82,10 @@ public client class Client {
     @display {label: "List Events"}
     remote isolated function listEvents(@display {label: "Preferred Time Zone"} TimeZone? timeZone = (),
                                         @display {label: "Preferred Content Type"} ContentType? contentType = (),
-                                        @display {label: "Optional Query Parameters"} string[] queryParams = [])  
+                                        @display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                         returns @tainted stream<Event, error>|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS], queryParams);
+        log:printInfo(">>>>>>>" +path.toString());
         EventStream objectInstance = check new (self.httpClient, <@untainted>path, timeZone, contentType);
         stream<Event, error> finalStream = new (objectInstance);
         return finalStream;
@@ -219,7 +220,7 @@ public client class Client {
     # + return - a record `Calendar` if success. Else `error`.
     @display {label: "Get Calendar"}
     remote isolated function getCalendar(@display {label: "Calendar ID"} string calendarId, 
-                                         @display {label: "Optional Query Parameters"} string[] queryParams = []) 
+                                         @display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                          returns @tainted Calendar|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId], queryParams);
         return check self.httpClient->get(<@untainted>path,targetType=Calendar);
@@ -237,15 +238,15 @@ public client class Client {
     @display {label: "Update Calendar"}
     remote isolated function updateCalendar(@display {label: "Calendar ID"} string calendarId,
                                             @display {label: "Calendar Name"} string? name = (),
-                                            @display {label: "Calendar Color"} string? color = (),
+                                            @display {label: "Calendar Color"} CalendarColor? color = (),
                                             @display {label: "Default Calendar"} boolean? isDefaultCalendar = ()) 
                                             returns @tainted Calendar|error {
 
-        CalendarMetadata calendarMetadata = {
-            name : name.toString(),
-            color : color.toString(),
-            isDefaultCalendar : isDefaultCalendar
-        };                                       
+        CalendarMetadata calendarMetadata = {};
+        if(name is string) {calendarMetadata.name = name;}
+        if(color is CalendarColor) {calendarMetadata.color = color;}
+        if(isDefaultCalendar is boolean) {calendarMetadata.isDefaultCalendar = isDefaultCalendar;}
+                                      
         string path = check createUrl([LOGGED_IN_USER, CALENDARS, calendarId]);
         return check self.httpClient->patch(<@untainted>path, check calendarMetadata.cloneWithType(json), targetType=Calendar);
     }
@@ -260,7 +261,7 @@ public client class Client {
     #                   https://docs.microsoft.com/en-us/graph/query-parameters
     # + return - a stream of `Calendar` if success. Else `error`.
     @display {label: "List Calendars"}
-    remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string[] queryParams = [])  
+    remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string? queryParams = ())  
                                            returns @tainted stream<Calendar, error>|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS], queryParams);
         CalendarStream objectInstance = check new (self.httpClient, <@untainted>path);
