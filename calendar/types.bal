@@ -523,9 +523,33 @@ public type Calendar record {
 
 public type GeneratedCalendarData record {
     readonly string id;
+    readonly string hexColor?;
+    readonly string changeKey?;
 };
 public type CalendarMetadata record {
     string name?;
-    string color?;
     boolean? isDefaultCalendar?;
+    OnlineMeetingProviderType[] allowedOnlineMeetingProviders?;
+    boolean canEdit?;
+    boolean canShare?;
+    boolean isRemovable?;
+    boolean isTallyingResponses?;
+    boolean canViewPrivateItems?;
+    CalendarColor? color?;
+    OnlineMeetingProviderType defaultOnlineMeetingProvider?;
+    EmailAddress owner?;
 };
+
+public enum CalendarColor {
+    CALENDAR_COLOR_AUTO = "auto",
+    CALENDAR_COLOR_LIGHTBLUE = "lightBlue",
+    CALENDAR_COLOR_LIGHT_GREEN = "lightGreen",
+    CALENDAR_COLOR_LIGHT_ORANGE = "lightOrange",
+    CALENDAR_COLOR_LIGHT_GRAY = "lightGray",
+    CALENDAR_COLOR_LIGHT_YELLOW = "lightYellow",
+    CALENDAR_COLOR_LIGHT_TEAL = "lightTeal",
+    CALENDAR_COLOR_LIGHT_PINK = "lightPink",
+    CALENDAR_COLOR_LIGHT_BROWN = "lightBrown",
+    CALENDAR_COLOR_LIGHT_RED = "lightRed",
+    CALENDAR_COLOR_MAX_COLOR = "maxColor"
+}
