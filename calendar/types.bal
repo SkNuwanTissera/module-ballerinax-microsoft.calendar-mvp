@@ -152,6 +152,26 @@ public type PatternedRecurrence record {
     RecurrenceRange range?;
 };
 
+# Describes a date range over which a recurring event repeats.
+# 
+# You can specify the date range for a recurring event in one of 3 ways depending on your scenario. 
+# While you must always specify a startDate value for the date range, you can specify a recurring event that ends by a 
+# specific date, or that doesn't end, or that ends after a specific number of occurrences. 
+# 
+# Note that the actual occurrences within the date range always follow the recurrence pattern that you 
+# specify for the recurring event. A recurring event is always defined by its recurrencePattern 
+# (how frequently the event repeats), and its recurrenceRange (for how long the event repeats).
+#
+# + endDate - The date to stop applying the recurrence pattern. 
+#             Depending on the recurrence pattern of the event, the last occurrence of the meeting may not be this date. 
+#             Required if type is endDate.  
+# + numberOfOccurrences - The number of times to repeat the event. Required and must be positive if type is numbered.  
+# + recurrenceTimeZone - Time zone for the startDate and endDate properties. 
+#                        Optional. If not specified, the time zone of the event is used.  
+# + startDate - The date to start applying the recurrence pattern. The first occurrence of the meeting may be this date 
+#               or later, depending on the recurrence pattern of the event. Must be the same value as the start property 
+#               of the recurring event. Required.  
+# + 'type - The recurrence range. The possible values are: endDate, noEnd, numbered. Required. 
 public type RecurrenceRange record {
     string endDate?;
     int numberOfOccurrences?;
@@ -160,10 +180,21 @@ public type RecurrenceRange record {
     RecurrenceRangeType 'type?;
 };
 
+# Represents information about a user in the sending or receiving end of an event, message or group post.
+#
+# + emailAddress - The recipient's email address.
 public type Recipient record {
     EmailAddress emailAddress?;
 };
 
+# Details for an attendee to join the meeting online. Read-only.
+#
+# + conferenceId - Field Description  
+# + joinUrl - Field Description  
+# + phones - Field Description  
+# + quickDial - Field Description  
+# + tollFreeNumbers - Field Description  
+# + tollNumber - Field Description  
 public type OnlineMeetingInfo record {
     string conferenceId?;
     string joinUrl?;
@@ -283,6 +314,15 @@ public enum RecurrenceRangeType {
     RECURRENCE_RANGE_TYPE_NUMBERED = "numbered"
 }
 
+# Describes the frequency by which a recurring event repeats.
+# 
+# You can specify the recurrence pattern of a recurring event in one of 6 ways depending on your scenario. 
+# For each pattern type, specify the amount of time between occurrences. 
+# The actual occurrences of the recurring event always follow this pattern falling within the date range that you 
+# specify for the event. A recurring event is always defined by its recurrencePattern(how frequently the event repeats), 
+# and its recurrenceRange (over how long the event repeats).
+# 
+# API Doc : https://docs.microsoft.com/en-us/graph/api/resources/recurrencepattern?view=graph-rest-1.0 
 public enum RecurrencePattern {
     RECURRENCE_PATTERN_DAILY = "daily",
     RECURRENCE_PATTERN_WEEKLY = "weekly",
