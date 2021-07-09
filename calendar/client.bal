@@ -22,7 +22,7 @@ import ballerina/log;
 # + httpClient - the HTTP Client
 @display {
     label: "Microsoft Calendar Client",
-    iconPath: "logo.svg" //TODO : Insert this logo 48*48
+    iconPath: "logo.svg"
 }
 public client class Client {
     http:Client httpClient;
