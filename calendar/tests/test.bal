@@ -120,7 +120,7 @@ function testListEvents() {
 function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
     string subject = "Test-Subject";
-    string body = "Test-Subject";
+    string body = "Test-Body";
     Event|error event = calendarClient->addQuickEvent(subject, body);
     if (event is Event) {
         eventId = event.id.toString();
