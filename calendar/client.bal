@@ -26,9 +26,11 @@ import ballerina/log;
 }
 public client class Client {
     http:Client httpClient;
+    Configuration config;
 
     # Initiate outloook calendar configuration
     public isolated function init(Configuration config) returns error? {
+        self.config = config;
         http:BearerTokenConfig|http:OAuth2RefreshTokenGrantConfig clientConfig = config.clientConfig;
         http:ClientSecureSocket? socketConfig = config?.secureSocketConfig;
         self.httpClient = check new (BASE_URL, {
@@ -81,7 +83,7 @@ public client class Client {
                                         @display {label: "Optional Query Parameters"} string? queryParams = ()) 
                                         returns @tainted stream<Event, error>|error {
         string path = check createUrl([LOGGED_IN_USER, EVENTS], queryParams);
-        EventStream objectInstance = check new (self.httpClient, <@untainted>path, timeZone, contentType);
+        EventStream objectInstance = check new (self.config, self.httpClient, <@untainted>path, timeZone, contentType, queryParams);
         stream<Event, error> finalStream = new (objectInstance);
         return finalStream;
     }
