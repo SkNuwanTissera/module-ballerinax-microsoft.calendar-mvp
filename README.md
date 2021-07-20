@@ -5,11 +5,11 @@ Ballerina Microsoft Outlook Connector
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-microsoft.outlook.calendar.svg)](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/commits/master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-The `microsoft.outlook.calendar` is a [Ballerina](https://ballerina.io/) connector for Microsoft Excel.
+The `microsoft.outlook.calendar` is a [Ballerina](https://ballerina.io/) connector for Microsoft Outlook Calendar.
 
-[Microsoft Excel](https://www.microsoft.com/en-ww/microsoft-365/outlook.calendar) is a spreadsheet application developed by Microsoft in the Office365.
+[Microsoft Outlook Calendar](https://www.microsoft.com/en-ww/microsoft-365/outlook.calendar) is composed of the calendar and scheduling component of Outlook developed by Microsoft.
 
-This connector provides operations for connecting and interacting with Microsoft Graph API Excel endpoints over the network. 
+This connector provides operations for connecting and interacting with Microsoft Graph API Outlook Calendar endpoints over the network. 
 For more information about configuration and operations, go to the module. 
 - [`microsoft.outlook.calendar`](https://docs.central.ballerina.io/ballerinax/microsoft.outlook.calendar/latest).
 
