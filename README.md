@@ -24,7 +24,7 @@ For more information about configuration and operations, go to the module.
 
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
 
-2. Download and install [Ballerina Beta 2](https://ballerina.io/). 
+2. Download and install [Ballerina Beta 1](https://ballerina.io/). 
 
 ## Building the Source
 Execute the commands below to build from the source after installing Ballerina SL Beta 2 version.
